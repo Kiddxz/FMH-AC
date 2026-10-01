@@ -10,7 +10,7 @@ This plan converts the static FMH Animal Clinic frontend into a Laravel + MySQL 
 
 | What | Where | Why |
 |---|---|---|
-| Exact copy of the ZIP contents (49 pages, `animal.css`, `animal.js`, `image/` with 5 pictures + `Educational_Videos.html`) | `legacy-frontend/` | A permanent, untouched reference. Verified identical to the ZIP with `diff -r` |
+| Exact copy of the ZIP contents (47 pages, `animal.css`, `animal.js`, `image/` with 5 pictures + `Educational_Videos.html`) | `legacy-frontend/` | A permanent, untouched reference. Verified identical to the ZIP with `diff -r` |
 | The original upload commit | git commit `7d5587b` ("Add files via upload") | You can always check out the exact original |
 | Phase 1 audit | `docs/PHASE1_AUDIT.md` | So the audit lives with the project |
 
@@ -61,7 +61,7 @@ FMH-AC/
 
 **Why `animal.css` goes in `public/` root and not `public/css/`:** the CSS loads backgrounds with relative paths like `url("image/home.jpg")`. Those are resolved relative to the CSS file. Keeping `animal.css` next to `image/` means **zero CSS edits** and identical visuals.
 
-## 4. Page → route → view → controller map (all 49 pages)
+## 4. Page → route → view → controller map (all 47 pages)
 
 Role prefixes: Customer `/portal`, Staff `/staff`, Vet/Admin `/admin`, Super Admin `/superadmin`. Every prefix is protected by login + role middleware.
 
@@ -159,7 +159,7 @@ Role prefixes: Customer `/portal`, Staff `/staff`, Vet/Admin `/admin`, Super Adm
 | superadminlogout.html | `GET /superadmin/logout` → `POST /logout` | superadmin/logout | — | — |
 | *(new)* | `GET/PUT /superadmin/profile` | superadmin/profile | ProfileController | REQ003 |
 
-**Totals:** 46 of the 49 original pages carry over to Blade with their design. A few pairs share one template where the pages were near-duplicates (new/edit appointment form, admin/super-admin reports). The 3 role-specific login pages are replaced by the single login, and they and `Educational_Videos.html` stay only in `legacy-frontend/`. About 25 new views are needed for missing features, and they reuse existing CSS classes (`admin-table-card`, `admin-tools`, `appointment-form-card`, `superadmin-table`, …) so they look native.
+**Totals:** 44 of the 47 original pages carry over to Blade with their design (an earlier version of this plan said 49; that count wrongly included animal.css and animal.js). The 3 role-specific login pages are replaced by the single login, and they and `Educational_Videos.html` stay only in `legacy-frontend/`. About 25 new views are needed for missing features, and they reuse existing CSS classes (`admin-table-card`, `admin-tools`, `appointment-form-card`, `superadmin-table`, …) so they look native.
 
 ## 5. CSS, JS and asset reuse
 

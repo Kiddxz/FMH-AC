@@ -1,7 +1,7 @@
 # FMH Animal Clinic — Requirement Traceability List (Gap Analysis)
 
 **Source of truth:** the capstone paper *A Web-Based Sales, Inventory and Appointment Management System for FMH Animal Clinic* (STI College Las Piñas, May 28 2026).
-**Base project:** `FMH_animal_clinic.zip` (49 HTML pages, `animal.css`, `animal.js`, `image/`).
+**Base project:** `FMH_animal_clinic.zip` (47 HTML pages, `animal.css`, `animal.js`, `image/`).
 
 ### Status key
 | Status | Meaning |
@@ -537,7 +537,7 @@
 | NFR-REQ011 | Protect sensitive records (contact numbers, addresses, emails, medical records, sales/income per Interview 2) | Every page opens without logging in | INCORRECT | Login + roles + ownership checks on every page | / 4, 18 | Logged out → every inside address sends you to login |
 | NFR-REQ012 | Role-based access by permissions | None | MISSING | Middleware + permissions + policies | / 4 | Full role-vs-address test table passes |
 | NFR-REQ013 | Scalability | — | MISSING | Proper tables, indexes, paging | / 2 | Seed 10,000 records; pages still fast |
-| NFR-REQ014 | Structured, modular design | 49 copies of each menu; one huge CSS file | PARTIAL | Blade layouts and partials, controllers per module, service classes | / 1 | Changing a menu means editing one file |
+| NFR-REQ014 | Structured, modular design | 47 copies of each menu; one huge CSS file | PARTIAL | Blade layouts and partials, controllers per module, service classes | / 1 | Changing a menu means editing one file |
 | NFR-REQ015 | Future improvements without rebuilding | Same as above | PARTIAL | Same | / 1 | — |
 | NFR-REQ016 | Works in Chrome, Firefox and Edge | Only tested in Chromium; images are AVIF files named .jpg (supported by all three) | NEEDS TESTING | Test in all three | / 19 | Open key pages in each browser |
 | NFR-REQ017 | Works on desktop and mobile | On a phone screen: **admin dashboard is wider than the screen**, and the Super Admin menu shows only 3 of 13 links | PARTIAL | Small CSS additions | `public/animal.css` / 18 | Phone-size view: no sideways scrolling, all menu links reachable |

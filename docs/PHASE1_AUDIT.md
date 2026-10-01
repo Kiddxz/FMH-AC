@@ -26,7 +26,7 @@
 
 | Item | Finding |
 |---|---|
-| 49 HTML + `animal.css` + `animal.js` | **Byte-for-byte identical** in the ZIP and the repo |
+| 47 HTML + `animal.css` + `animal.js` | **Byte-for-byte identical** in the ZIP and the repo |
 | `image/home.jpg, services.jpg, about.jpg, contact.jpg, bg.jpg` | **In the ZIP only.** `animal.css` references them (`url("image/…")`), so **background images are broken in the repo** |
 | Image formats | The four `.jpg` files are actually **AVIF** images, and `bg.jpg` is a **4.1 MB PNG**. Chrome, Firefox and Edge display them, but the 4 MB background slows page loads (NFR004) |
 | `image/Educational_Videos.html` | **Unrelated** (Las Piñas National High School GAD/Brigada video page, referencing missing `.mp4` files). Recommend excluding it from the new app; it is kept in the original backup |
@@ -229,7 +229,7 @@ Nothing in your list goes beyond the paper.
 | 011 | Protect sensitive records | **INCORRECT** | See H |
 | 012 | RBAC by assigned permissions | **MISSING** | Middleware + permissions + policies |
 | 013 | Scalability | **MISSING** | Normalized schema, indexes, pagination |
-| 014 | Modular design | **PARTIAL** | 49 copies of the nav → Blade layouts/partials, service classes |
+| 014 | Modular design | **PARTIAL** | 47 copies of the nav → Blade layouts/partials, service classes |
 | 015 | Future enhancements | **PARTIAL** | Same |
 | 016 | Chrome, Firefox, Edge | **NEEDS TESTING** | Tested only in Chromium so far. AVIF images are supported in current versions of all three |
 | 017 | Desktop & mobile | **PARTIAL** | At 375px: **admindashboard overflows (503px)**. SA nav shows 3 of 13 links (horizontal scroll strip) |
@@ -372,7 +372,7 @@ This aligns with the paper's ERD (Roles, Users, Customers, Pets, Services, Appoi
 
 | Phase | Work |
 |---|---|
-| **2** | Preserve the original: git tag `original-frontend` + copy the ZIP contents, **including images**, to `legacy-frontend/`. Map all 49 pages → Blade view / route / controller. Record your P1–P18 decisions |
+| **2** | Preserve the original: git tag `original-frontend` + copy the ZIP contents, **including images**, to `legacy-frontend/`. Map all 47 pages → Blade view / route / controller. Record your P1–P18 decisions |
 | **3** | Laravel skeleton; assets to `public/`; layouts + nav partials; pages converted 1:1 (same markup/classes); before/after screenshots to prove the design is unchanged |
 | **4** | Show the final schema → migrations, models, relationships, seeders (roles, permissions, services, demo accounts, fictitious records — Interview 2 recommends fictitious data) |
 | **5** | Auth (login, email code, reset), role & permission middleware, policies, unauthorized-access tests |

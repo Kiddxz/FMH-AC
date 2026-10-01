@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    FMH Animal Clinic | Super Admin Logout
+  </title>
+
+  <link rel="stylesheet" href="{{ asset('animal.css') }}">
+
+  <script src="{{ asset('animal.js') }}" defer></script>
+
+</head>
+
+<body class="superadmin-login-page">
+
+  <main class="superadmin-login-container">
+
+    <div class="superadmin-login-card">
+
+      <div class="superadmin-login-logo">
+        🐾 FMH Animal Clinic
+      </div>
+
+      <h1>
+        Log Out
+      </h1>
+
+      <p class="superadmin-login-description">
+        Are you sure you want to log out of the Super Admin account?
+      </p>
+
+      <button
+        type="button"
+        class="superadmin-login-btn"
+        id="superAdminLogoutBtn"
+      >
+        Logout
+      </button>
+
+      <div class="superadmin-login-back">
+
+        <a href="{{ route('superadmin.dashboard') }}">
+          Cancel
+        </a>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+
+</html>
