@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    FMH Animal Clinic | Super Admin Users
+  </title>
+
+  <link rel="stylesheet" href="animal.css">
+
+  <script src="animal.js" defer></script>
+
+</head>
+
+<body class="superadmin-page">
+
+  <header class="superadmin-header">
+
+    <div class="logo">
+      🐾 FMH Animal Clinic
+    </div>
+
+    <nav class="superadmin-nav">
+
+      <a href="superadmindashboard.html">
+        Dashboard
+      </a>
+
+      <a
+        href="superadminusers.html"
+        class="active"
+      >
+        Users
+      </a>
+
+      <a href="superadminappointments.html">
+        Appointments
+      </a>
+
+      <a href="superadminpetrecords.html">
+        Pet Records
+      </a>
+
+      <a href="superadminwaivers.html">
+        Waiver & Consent
+      </a>
+
+      <a href="superadminpos.html">
+        POS
+      </a>
+
+      <a href="superadmintransactions.html">
+        Transactions
+      </a>
+
+      <a href="superadmininventory.html">
+        Inventory
+      </a>
+
+      <a href="superadminreports.html">
+        Reports
+      </a>
+
+      <a href="superadminactivity.html">
+        Activity Logs
+      </a>
+
+      <a href="superadminbackup.html">
+        Backup & Recovery
+      </a>
+
+      <a href="superadminsettings.html">
+        Settings
+      </a>
+
+      <a href="superadminlogout.html">
+        Logout
+      </a>
+
+    </nav>
+
+  </header>
+
+  <main class="superadmin-container">
+
+    <div class="superadmin-page-heading">
+
+      <div>
+
+        <h1>
+          User Management
+        </h1>
+
+        <p>
+          Manage user accounts, roles, and permissions.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="superadmin-add-btn"
+      >
+        + Add User
+      </button>
+
+    </div>
+
+    <div class="superadmin-tools">
+
+      <input
+        type="search"
+        placeholder="Search user..."
+      >
+
+      <select>
+
+        <option>
+          All Roles
+        </option>
+
+        <option>
+          Super Administrator
+        </option>
+
+        <option>
+          Veterinarian/Administrator
+        </option>
+
+        <option>
+          Staff/Receptionist
+        </option>
+
+        <option>
+          Customer
+        </option>
+
+      </select>
+
+      <select>
+
+        <option>
+          All Status
+        </option>
+
+        <option>
+          Active
+        </option>
+
+        <option>
+          Inactive
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="superadmin-table-card">
+
+      <table class="superadmin-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Name
+            </th>
+
+            <th>
+              Email
+            </th>
+
+            <th>
+              Role
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Actions
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr>
+
+            <td>
+              System Administrator
+            </td>
+
+            <td>
+              superadmin@fmhanimalclinic.com
+            </td>
+
+            <td>
+              Super Administrator
+            </td>
+
+            <td>
+
+              <span class="status active">
+                Active
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="action-edit"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="action-delete"
+              >
+                Deactivate
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Mark Santos
+            </td>
+
+            <td>
+              mark@email.com
+            </td>
+
+            <td>
+              Veterinarian/Administrator
+            </td>
+
+            <td>
+
+              <span class="status active">
+                Active
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="action-edit"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="action-delete"
+              >
+                Deactivate
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Anna Reyes
+            </td>
+
+            <td>
+              anna@email.com
+            </td>
+
+            <td>
+              Staff/Receptionist
+            </td>
+
+            <td>
+
+              <span class="status active">
+                Active
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="action-edit"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="action-delete"
+              >
+                Deactivate
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              John Cruz
+            </td>
+
+            <td>
+              john@email.com
+            </td>
+
+            <td>
+              Customer
+            </td>
+
+            <td>
+
+              <span class="status inactive">
+                Inactive
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="action-edit"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="action-delete"
+              >
+                Activate
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </main>
+
+  <footer>
+    © 2026 FMH Animal Clinic | Super Admin Panel
+  </footer>
+
+</body>
+
+</html>

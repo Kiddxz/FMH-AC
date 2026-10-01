@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    FMH Animal Clinic | Pets
+  </title>
+
+  <link rel="stylesheet" href="animal.css">
+
+</head>
+
+<body class="admin-dashboard-page">
+
+  <header class="admin-header">
+
+    <h2 class="logo">
+      🐾 FMH Animal Clinic
+    </h2>
+
+    <nav class="admin-nav">
+
+      <a href="admindashboard.html">
+        Dashboard
+      </a>
+
+      <a href="adminappointments.html">
+        Appointments
+      </a>
+
+      <a
+        href="adminpets.html"
+        class="active"
+      >
+        Pets
+      </a>
+
+      <a href="adminusers.html">
+        Users
+      </a>
+
+      <a href="adminservices.html">
+        Services
+      </a>
+
+      <a href="adminpayments.html">
+        Payments
+      </a>
+
+      <a href="admininventory.html">
+        Inventory
+      </a>
+
+      <a href="adminreports.html">
+        Reports
+      </a>
+
+      <a href="adminlogout.html">
+        Logout
+      </a>
+
+    </nav>
+
+  </header>
+
+  <main class="admin-container">
+
+    <div class="admin-page-heading">
+
+      <div>
+
+        <h1>
+          Pets
+        </h1>
+
+        <p>
+          View and manage registered pets.
+        </p>
+
+      </div>
+
+      <div class="admin-date">
+        📅 August 12, 2026
+      </div>
+
+    </div>
+
+    <div class="admin-tools">
+
+      <input
+        type="search"
+        placeholder="Search by pet name, breed, or owner..."
+      >
+
+      <select>
+
+        <option>
+          All Species
+        </option>
+
+        <option>
+          Dog
+        </option>
+
+        <option>
+          Cat
+        </option>
+
+      </select>
+
+      <select>
+
+        <option>
+          All Gender
+        </option>
+
+        <option>
+          Male
+        </option>
+
+        <option>
+          Female
+        </option>
+
+      </select>
+
+      <button
+        class="admin-add-btn"
+        type="button"
+      >
+        + Add New Pet
+      </button>
+
+    </div>
+
+    <div class="admin-table-card">
+
+      <table class="admin-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Pet Name
+            </th>
+
+            <th>
+              Breed
+            </th>
+
+            <th>
+              Species
+            </th>
+
+            <th>
+              Gender
+            </th>
+
+            <th>
+              Age
+            </th>
+
+            <th>
+              Owner
+            </th>
+
+            <th>
+              Actions
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr>
+
+            <td>
+              Max
+            </td>
+
+            <td>
+              Golden Retriever
+            </td>
+
+            <td>
+              Dog
+            </td>
+
+            <td>
+              Male
+            </td>
+
+            <td>
+              3 years
+            </td>
+
+            <td>
+              Mark Santos
+            </td>
+
+            <td>
+
+              <button class="action-view">
+                View
+              </button>
+
+              <button class="action-edit">
+                Edit
+              </button>
+
+              <button class="action-delete">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Buddy
+            </td>
+
+            <td>
+              Labrador Retriever
+            </td>
+
+            <td>
+              Dog
+            </td>
+
+            <td>
+              Male
+            </td>
+
+            <td>
+              2 years
+            </td>
+
+            <td>
+              John Cruz
+            </td>
+
+            <td>
+
+              <button class="action-view">
+                View
+              </button>
+
+              <button class="action-edit">
+                Edit
+              </button>
+
+              <button class="action-delete">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Coco
+            </td>
+
+            <td>
+              Persian
+            </td>
+
+            <td>
+              Cat
+            </td>
+
+            <td>
+              Female
+            </td>
+
+            <td>
+              2 years
+            </td>
+
+            <td>
+              Anna Reyes
+            </td>
+
+            <td>
+
+              <button class="action-view">
+                View
+              </button>
+
+              <button class="action-edit">
+                Edit
+              </button>
+
+              <button class="action-delete">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Luna
+            </td>
+
+            <td>
+              Siamese
+            </td>
+
+            <td>
+              Cat
+            </td>
+
+            <td>
+              Female
+            </td>
+
+            <td>
+              1 year
+            </td>
+
+            <td>
+              Mark Santos
+            </td>
+
+            <td>
+
+              <button class="action-view">
+                View
+              </button>
+
+              <button class="action-edit">
+                Edit
+              </button>
+
+              <button class="action-delete">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </main>
+
+  <footer>
+    © 2026 FMH Animal Clinic | Admin Panel
+  </footer>
+
+</body>
+
+</html>
