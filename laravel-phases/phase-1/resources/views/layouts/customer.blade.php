@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'FMH Animal Clinic')</title>
-    <link rel="stylesheet" href="{{ asset('animal.css') }}">
-    <script src="{{ asset('animal.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/animal.css') }}">
+    <script src="{{ asset('js/animal.js') }}" defer></script>
 </head>
-
 <body class="@yield('body_class', 'dashboard-page')">
-
     <header class="app-header">
-
         <h2 class="logo">🐾 FMH Animal Clinic</h2>
-
         <nav class="app-nav">
             <a href="{{ route('portal.dashboard') }}" class="{{ request()->routeIs('portal.dashboard') ? 'active' : '' }}">
                 Dashboard
@@ -29,23 +24,15 @@
                 Appointment History
             </a>
         </nav>
-
         <a href="{{ route('portal.profile') }}" class="profile-link {{ request()->routeIs('portal.profile') ? 'active-profile' : '' }}">
             👤 Profile
         </a>
-
     </header>
-
     @include('partials.phase-notice')
-
     @yield('content')
-
     @hasSection('footer')
         <footer>@yield('footer')</footer>
     @endif
-
     @stack('scripts')
-
 </body>
-
 </html>

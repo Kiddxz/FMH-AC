@@ -1,356 +1,106 @@
 @extends('layouts.admin')
-
 @section('title', 'FMH Animal Clinic | Appointments')
 @section('body_class', 'admin-layout')
 @section('footer', '© 2026 FMH Animal Clinic | Admin Panel')
-
 @section('content')
 <main class="admin-container">
-
   <div class="admin-page-heading">
-
     <div>
-
-      <h1>
-        Appointments
-      </h1>
-
-      <p>
-        Manage and monitor all pet appointments.
-      </p>
-
+      <h1>Appointments</h1>
+      <p>Manage and monitor all pet appointments.</p>
     </div>
-
     <div class="admin-date">
       📅 {{ now()->format('F j, Y') }}
     </div>
-
   </div>
-
   <div class="admin-tools">
-
-    <input
-      type="search"
-      placeholder="Search by pet owner, pet name, or service..."
-    >
-
+    <input type="search" placeholder="Search by pet owner, pet name, or service...">
     <select>
-
-      <option>
-        All Status
-      </option>
-
-      <option>
-        Pending
-      </option>
-
-      <option>
-        Confirmed
-      </option>
-
-      <option>
-        Completed
-      </option>
-
-      <option>
-        Cancelled
-      </option>
-
+      <option>All Status</option>
+      <option>Pending</option>
+      <option>Confirmed</option>
+      <option>Completed</option>
+      <option>Cancelled</option>
     </select>
-
     <select>
-
-      <option>
-        All Services
-      </option>
-
-      <option>
-        Consultation
-      </option>
-
-      <option>
-        Vaccination
-      </option>
-
-      <option>
-        Grooming
-      </option>
-
+      <option>All Services</option>
+      <option>Consultation</option>
+      <option>Vaccination</option>
+      <option>Grooming</option>
     </select>
-
-    <button
-      class="admin-add-btn"
-      type="button"
-      onclick="window.location.href='{{ route('admin.appointments.create') }}'"
-    >
-      + New Appointment
-    </button>
-
+    <button class="admin-add-btn" type="button" onclick="window.location.href='{{ route('admin.appointments.create') }}'">+ New Appointment</button>
   </div>
-
   <div class="admin-table-card">
-
     <table class="admin-table">
-
       <thead>
-
         <tr>
-
-          <th>
-            Pet Owner
-          </th>
-
-          <th>
-            Pet
-          </th>
-
-          <th>
-            Service
-          </th>
-
-          <th>
-            Date
-          </th>
-
-          <th>
-            Status
-          </th>
-
-          <th>
-            Actions
-          </th>
-
+          <th>Pet Owner</th>
+          <th>Pet</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
         </tr>
-
       </thead>
-
       <tbody>
-
         <tr>
-
+          <td>Mark Santos</td>
+          <td>Max</td>
+          <td>Consultation</td>
+          <td>August 12, 2026</td>
           <td>
-            Mark Santos
+            <span class="status pending">Pending</span>
           </td>
-
           <td>
-            Max
+            <button type="button" class="action-view" onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'">View</button>
+            <button type="button" class="action-edit" onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'">Edit</button>
+            <button type="button" class="action-delete">Delete</button>
           </td>
-
-          <td>
-            Consultation
-          </td>
-
-          <td>
-            August 12, 2026
-          </td>
-
-          <td>
-
-            <span class="status pending">
-              Pending
-            </span>
-
-          </td>
-
-          <td>
-
-            <button
-              type="button"
-              class="action-view"
-              onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'"
-            >
-              View
-            </button>
-
-            <button
-              type="button"
-              class="action-edit"
-              onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="action-delete"
-            >
-              Delete
-            </button>
-
-          </td>
-
         </tr>
-
         <tr>
-
+          <td>John Cruz</td>
+          <td>Buddy</td>
+          <td>Vaccination</td>
+          <td>August 12, 2026</td>
           <td>
-            John Cruz
+            <span class="status confirmed">Confirmed</span>
           </td>
-
           <td>
-            Buddy
+            <button type="button" class="action-view" onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'">View</button>
+            <button type="button" class="action-edit" onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'">Edit</button>
+            <button type="button" class="action-delete">Delete</button>
           </td>
-
-          <td>
-            Vaccination
-          </td>
-
-          <td>
-            August 12, 2026
-          </td>
-
-          <td>
-
-            <span class="status confirmed">
-              Confirmed
-            </span>
-
-          </td>
-
-          <td>
-
-            <button
-              type="button"
-              class="action-view"
-              onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'"
-            >
-              View
-            </button>
-
-            <button
-              type="button"
-              class="action-edit"
-              onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="action-delete"
-            >
-              Delete
-            </button>
-
-          </td>
-
         </tr>
-
         <tr>
-
+          <td>Anna Reyes</td>
+          <td>Coco</td>
+          <td>Grooming</td>
+          <td>August 13, 2026</td>
           <td>
-            Anna Reyes
+            <span class="status pending">Pending</span>
           </td>
-
           <td>
-            Coco
+            <button type="button" class="action-view" onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'">View</button>
+            <button type="button" class="action-edit" onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'">Edit</button>
+            <button type="button" class="action-delete">Delete</button>
           </td>
-
-          <td>
-            Grooming
-          </td>
-
-          <td>
-            August 13, 2026
-          </td>
-
-          <td>
-
-            <span class="status pending">
-              Pending
-            </span>
-
-          </td>
-
-          <td>
-
-            <button
-              type="button"
-              class="action-view"
-              onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'"
-            >
-              View
-            </button>
-
-            <button
-              type="button"
-              class="action-edit"
-              onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="action-delete"
-            >
-              Delete
-            </button>
-
-          </td>
-
         </tr>
-
         <tr>
-
+          <td>Mark Santos</td>
+          <td>Luna</td>
+          <td>Consultation</td>
+          <td>August 13, 2026</td>
           <td>
-            Mark Santos
+            <span class="status completed">Completed</span>
           </td>
-
           <td>
-            Luna
+            <button type="button" class="action-view" onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'">View</button>
+            <button type="button" class="action-edit" onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'">Edit</button>
+            <button type="button" class="action-delete">Delete</button>
           </td>
-
-          <td>
-            Consultation
-          </td>
-
-          <td>
-            August 13, 2026
-          </td>
-
-          <td>
-
-            <span class="status completed">
-              Completed
-            </span>
-
-          </td>
-
-          <td>
-
-            <button
-              type="button"
-              class="action-view"
-              onclick="window.location.href='{{ route('admin.appointments.show', 1) }}'"
-            >
-              View
-            </button>
-
-            <button
-              type="button"
-              class="action-edit"
-              onclick="window.location.href='{{ route('admin.appointments.edit', 1) }}'"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="action-delete"
-            >
-              Delete
-            </button>
-
-          </td>
-
         </tr>
-
       </tbody>
-
     </table>
-
   </div>
-
 </main>
 @endsection

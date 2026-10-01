@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC PAGES & LOGIN
 // ======================================================================
 
-Route::view('/', 'public.home')->name('home');  // home.html
+Route::view('/', 'home')->name('home');  // home.html
 Route::view('/login', 'auth.login')->name('login');  // login.html
 Route::view('/register', 'auth.register')->name('register');  // register.html
 Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');  // forgotpass.html

@@ -70,7 +70,7 @@ header {
       rgba(0, 0, 0, 0.42),
       rgba(0, 0, 0, 0.42)
     ),
-    url("image/home.jpg");
+    url("../image/home.jpg");
 
   background-size: cover;
   background-position: center;
@@ -129,7 +129,7 @@ header {
       rgba(0, 0, 0, 0.48),
       rgba(0, 0, 0, 0.48)
     ),
-    url("image/services.jpg");
+    url("../image/services.jpg");
 
   background-size: cover;
   background-position: center;
@@ -187,7 +187,7 @@ header {
       rgba(0, 0, 0, 0.48),
       rgba(0, 0, 0, 0.48)
     ),
-    url("image/about.jpg");
+    url("../image/about.jpg");
 
   background-size: cover;
   background-position: center;
@@ -228,7 +228,7 @@ header {
       rgba(0, 0, 0, 0.52),
       rgba(0, 0, 0, 0.52)
     ),
-    url("image/contact.jpg");
+    url("../image/contact.jpg");
 
   background-size: cover;
   background-position: center;
@@ -272,7 +272,7 @@ footer {
       rgba(0, 0, 0, 0.45),
       rgba(0, 0, 0, 0.45)
     ),
-    url("image/home.jpg");
+    url("../image/home.jpg");
 
   background-size: cover;
   background-position: center;
@@ -460,7 +460,7 @@ footer {
       rgba(0, 0, 0, 0.45),
       rgba(0, 0, 0, 0.45)
     ),
-    url("image/home.jpg");
+    url("../image/home.jpg");
 
   background-size: cover;
   background-position: center;
@@ -1696,7 +1696,7 @@ footer {
       rgba(0, 0, 0, 0.20),
       rgba(0, 0, 0, 0.20)
     ),
-    url("image/bg.jpg");
+    url("../image/bg.jpg");
 
   background-size: cover;
   background-position: center;

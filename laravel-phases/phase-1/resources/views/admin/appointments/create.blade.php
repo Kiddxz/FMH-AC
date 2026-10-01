@@ -1,211 +1,67 @@
 @extends('layouts.admin')
-
 @section('title', 'FMH Animal Clinic | New Appointment')
 @section('body_class', 'admin-layout')
 @section('footer', '© 2026 FMH Animal Clinic | Admin Panel')
-
 @section('content')
 <main class="admin-container">
-
   <div class="admin-page-heading">
-
     <div>
-
-      <h1>
-        New Appointment
-      </h1>
-
-      <p>
-        Create a new veterinary appointment for a pet.
-      </p>
-
+      <h1>New Appointment</h1>
+      <p>Create a new veterinary appointment for a pet.</p>
     </div>
-
   </div>
-
   <div class="appointment-form-card">
-
-    <form
-      action="{{ route('admin.appointments.index') }}"
-      method="get"
-    >
-
+    <form action="{{ route('admin.appointments.index') }}" method="get">
       <div class="appointment-form-row">
-
         <div class="appointment-form-group">
-
-          <label for="owner">
-            Pet Owner
-          </label>
-
-          <input
-            type="text"
-            id="owner"
-            name="owner"
-            placeholder="Enter pet owner's name"
-            required
-          >
-
+          <label for="owner">Pet Owner</label>
+          <input type="text" id="owner" name="owner" placeholder="Enter pet owner's name" required>
         </div>
-
         <div class="appointment-form-group">
-
-          <label for="pet">
-            Pet Name
-          </label>
-
-          <input
-            type="text"
-            id="pet"
-            name="pet"
-            placeholder="Enter pet's name"
-            required
-          >
-
+          <label for="pet">Pet Name</label>
+          <input type="text" id="pet" name="pet" placeholder="Enter pet's name" required>
         </div>
-
       </div>
-
       <div class="appointment-form-row">
-
         <div class="appointment-form-group">
-
-          <label for="service">
-            Service
-          </label>
-
-          <select
-            id="service"
-            name="service"
-            required
-          >
-
-            <option value="">
-              Select Service
-            </option>
-
-            <option value="Consultation">
-              Consultation
-            </option>
-
-            <option value="Vaccination">
-              Vaccination
-            </option>
-
-            <option value="Grooming">
-              Grooming
-            </option>
-
+          <label for="service">Service</label>
+          <select id="service" name="service" required>
+            <option value="">Select Service</option>
+            <option value="Consultation">Consultation</option>
+            <option value="Vaccination">Vaccination</option>
+            <option value="Grooming">Grooming</option>
           </select>
-
         </div>
-
         <div class="appointment-form-group">
-
-          <label for="status">
-            Status
-          </label>
-
-          <select
-            id="status"
-            name="status"
-            required
-          >
-
-            <option value="">
-              Select Status
-            </option>
-
-            <option value="Pending">
-              Pending
-            </option>
-
-            <option value="Confirmed">
-              Confirmed
-            </option>
-
-            <option value="Completed">
-              Completed
-            </option>
-
-            <option value="Cancelled">
-              Cancelled
-            </option>
-
+          <label for="status">Status</label>
+          <select id="status" name="status" required>
+            <option value="">Select Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
-
         </div>
-
       </div>
-
       <div class="appointment-form-row">
-
         <div class="appointment-form-group">
-
-          <label for="date">
-            Appointment Date
-          </label>
-
-          <input
-            type="date"
-            id="date"
-            name="date"
-            required
-          >
-
+          <label for="date">Appointment Date</label>
+          <input type="date" id="date" name="date" required>
         </div>
-
         <div class="appointment-form-group">
-
-          <label for="time">
-            Appointment Time
-          </label>
-
-          <input
-            type="time"
-            id="time"
-            name="time"
-            required
-          >
-
+          <label for="time">Appointment Time</label>
+          <input type="time" id="time" name="time" required>
         </div>
-
       </div>
-
       <div class="appointment-form-group">
-
-        <label for="notes">
-          Notes
-        </label>
-
-        <textarea
-          id="notes"
-          name="notes"
-          rows="5"
-          placeholder="Enter additional notes or concerns..."
-        ></textarea>
-
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="5" placeholder="Enter additional notes or concerns..."></textarea>
       </div>
-
       <div class="appointment-form-actions">
-
-        <a
-          href="{{ route('admin.appointments.index') }}" class="appointment-cancel-btn">
-          Cancel
-        </a>
-
-        <button
-          type="submit"
-          class="appointment-save-btn"
-        >
-          Save Appointment
-        </button>
-
+        <a href="{{ route('admin.appointments.index') }}" class="appointment-cancel-btn">Cancel</a>
+        <button type="submit" class="appointment-save-btn">Save Appointment</button>
       </div>
-
     </form>
-
   </div>
-
 </main>
 @endsection
