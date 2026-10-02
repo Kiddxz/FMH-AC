@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Access Denied')
+@section('icon', '🔒')
+@section('heading', 'Access Denied')
+@section('message', 'Sorry, your account is not allowed to open this page. If you think this is a mistake, please contact the FMH Animal Clinic administrator.')
