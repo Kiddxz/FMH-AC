@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /**
@@ -29,6 +30,18 @@ class PatientFlowTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $this->staff = User::where('email', 'assistant@fmhanimalclinic.com')->first();
         $this->vet = User::where('email', 'admin@fmhanimalclinic.com')->first();
+    }
+
+    // Like assertSee, but spaces and line breaks do not matter
+    // (VS Code may split a long line such as "Use This Customer" into two lines when saving).
+    private function assertSeeWords(TestResponse $response, string ...$texts): TestResponse
+    {
+        $html = preg_replace('/\s+/', ' ', $response->getContent());
+        foreach ($texts as $text) {
+            $this->assertStringContainsString($text, $html, "The page does not show: {$text}");
+        }
+
+        return $response;
     }
 
     private function walkIn(array $overrides = []): array
@@ -87,8 +100,9 @@ class PatientFlowTest extends TestCase
             ->assertRedirect('/staff/walk-ins/create')->assertSessionHas('duplicates');
         $this->assertSame(0, PatientVisit::count());
 
-        $this->actingAs($this->staff)->withSession(['duplicates' => [Customer::where('first_name', 'John')->value('id')]])
-            ->get('/staff/walk-ins/create')->assertSee('This mobile number is already registered')->assertSee('John Cruz')->assertSee('Use This Customer');
+        $warning = $this->actingAs($this->staff)->withSession(['duplicates' => [Customer::where('first_name', 'John')->value('id')]])
+            ->get('/staff/walk-ins/create');
+        $this->assertSeeWords($warning, 'This mobile number is already registered', 'John Cruz', 'Use This Customer');
 
         // confirmed as a different person -> saved
         $this->actingAs($this->staff)->post('/staff/walk-ins', $this->walkIn(['contact_number' => '09181234567', 'confirm_duplicate' => '1']))
@@ -111,7 +125,7 @@ class PatientFlowTest extends TestCase
         $buddy = Pet::where('name', 'Buddy')->first();
         $max = Pet::where('name', 'Max')->first();
 
-        $this->actingAs($this->staff)->get("/staff/customers/{$john->id}")->assertSee('Walk-in Check-in');
+        $this->assertSeeWords($this->actingAs($this->staff)->get("/staff/customers/{$john->id}"), 'Walk-in Check-in');
         $this->actingAs($this->staff)->get("/staff/customers/{$john->id}/check-in")->assertOk()->assertSee('Buddy')->assertDontSee('Max');
 
         // someone else's pet is refused
@@ -200,9 +214,9 @@ class PatientFlowTest extends TestCase
         $visit = PatientVisit::first();
         $this->actingAs($this->staff)->patch("/staff/visits/{$visit->id}/status", ['status' => 'ongoing']);
 
-        $this->actingAs($this->vet)->get('/admin/patient-flow')
-            ->assertOk()->assertSee('Choco')->assertSee('Write Record')
-            ->assertDontSee('Confirm Cancel')->assertDontSee('+ New Walk-in');   // the vet only views the board
+        $board = $this->actingAs($this->vet)->get('/admin/patient-flow')->assertOk();
+        $this->assertSeeWords($board, 'Choco', 'Write Record');
+        $board->assertDontSee('Confirm Cancel')->assertDontSee('New Walk-in');   // the vet only views the board
 
         $this->actingAs($this->vet)->get("/admin/pet-records/create?pet={$visit->pet_id}&visit={$visit->id}")
             ->assertOk()->assertSee('name="patient_visit_id" value="' . $visit->id . '"', false);
