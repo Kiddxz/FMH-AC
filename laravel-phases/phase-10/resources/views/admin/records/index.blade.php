@@ -47,7 +47,7 @@
             <td>{{ ucfirst($pet->species) }}</td>
             <td>{{ $pet->breed ?: '—' }}</td>
             <td>{{ $pet->medical_records_max_record_date ? \Illuminate\Support\Carbon::parse($pet->medical_records_max_record_date)->format('F j, Y') : '—' }}</td>
-            <td>{{ $pet->medical_records_count }} {{ \Illuminate\Support\Str::plural('record', $pet->medical_records_count) }}</td>
+            <td>{{ \Illuminate\Support\Str::plural('record', $pet->medical_records_count, true) }}</td>
             <td>
               <button class="action-view" type="button" onclick="window.location.href='{{ route('admin.pets.show', $pet) }}'">View</button>
               @can('records.write')
