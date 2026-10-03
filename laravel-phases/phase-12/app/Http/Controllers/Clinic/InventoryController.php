@@ -24,7 +24,6 @@ use Illuminate\View\View;
  */
 class InventoryController extends Controller
 {
-
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('search'));
