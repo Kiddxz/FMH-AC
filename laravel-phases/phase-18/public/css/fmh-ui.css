@@ -1,0 +1,273 @@
+/*
+  FMH Animal Clinic - fmh-ui.css (Phase 18: UI polish)
+
+  Loaded AFTER animal.css by the 4 panel layouts (customer, staff, admin, super admin).
+  It keeps the original design (orange #e89427, cream background, emoji icons, same pages)
+  and only makes things neater and the same in every panel:
+    1. Page base (font, footer always at the bottom)
+    2. One menu style for Staff, Admin and Super Admin (logo + user on top, menu below)
+    3. Phone menu (the "Menu" button)
+    4. Cards, headings, tables, buttons, forms
+    5. Phone and tablet sizes
+  To go back to the old look, remove the <link> to this file from the layouts.
+*/
+
+:root {
+  --fmh-orange: #e89427;
+  --fmh-orange-dark: #d57d13;
+  --fmh-orange-soft: #fff1df;
+  --fmh-cream: #f7f3ed;
+  --fmh-navy: #26364a;
+  --fmh-muted: #64748b;
+  --fmh-line: #eee6db;
+  --fmh-shadow: 0 1px 2px rgba(38, 54, 74, 0.04), 0 4px 16px rgba(38, 54, 74, 0.07);
+  --fmh-radius: 14px;
+}
+
+/* ---------- 1. Page base ---------- */
+.fmh-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.fmh-app > * { width: 100%; }
+.fmh-app > footer { margin-top: auto; padding: 22px 20px; font-size: 14px; color: #d6d6d6; }
+.fmh-app input, .fmh-app select, .fmh-app textarea, .fmh-app button { font-family: inherit; }
+
+/* Keyboard users can see where they are */
+.fmh-app a:focus-visible, .fmh-app button:focus-visible, .fmh-app summary:focus-visible,
+.fmh-app input:focus-visible, .fmh-app select:focus-visible, .fmh-app textarea:focus-visible {
+  outline: 3px solid rgba(232, 148, 39, 0.45);
+  outline-offset: 2px;
+}
+
+/* ---------- 2. Panel menu (Staff, Admin, Super Admin) ---------- */
+.fmh-app header.panel-header {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 2px 12px rgba(38, 54, 74, 0.08);
+}
+.panel-bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 20px;
+}
+.panel-bar .logo {
+  order: 1;
+  padding: 16px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fmh-navy);
+  text-decoration: none;
+}
+.panel-menu { display: contents; }
+
+.panel-user {
+  order: 2;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.panel-user-name { display: flex; flex-direction: column; text-align: right; line-height: 1.25; }
+.panel-user-name strong { color: var(--fmh-navy); font-size: 14px; }
+.panel-user-name small { color: var(--fmh-muted); font-size: 12px; }
+.panel-user a { color: var(--fmh-navy); font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.panel-user a:hover, .panel-user a.active { color: var(--fmh-orange); }
+.panel-user a.panel-logout { padding: 8px 14px; border: 1px solid var(--fmh-line); border-radius: 8px; }
+.panel-user a.panel-logout:hover { border-color: var(--fmh-orange); background: var(--fmh-orange-soft); }
+
+.panel-nav {
+  order: 3;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 0 10px;
+  border-top: 1px solid #f1ebe3;
+}
+.panel-nav a {
+  padding: 8px 13px;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.panel-nav a:hover { color: var(--fmh-orange); background: #fff5e8; }
+.panel-nav a.active { color: white; background: var(--fmh-orange); }
+
+/* ---------- 3. Phone menu button ---------- */
+.nav-toggle {
+  order: 2;
+  display: none;
+  margin-left: auto;
+  padding: 9px 14px;
+  border: 1px solid var(--fmh-line);
+  border-radius: 8px;
+  background: white;
+  color: var(--fmh-navy);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.nav-toggle:hover { border-color: var(--fmh-orange); color: var(--fmh-orange); }
+
+/* ---------- 4. Cards, headings, tables, buttons ---------- */
+.fmh-app .admin-table-card, .fmh-app .admin-panel, .fmh-app .admin-summary-card, .fmh-app .admin-stat-card,
+.fmh-app .superadmin-table-card, .fmh-app .superadmin-panel, .fmh-app .superadmin-stat-card,
+.fmh-app .superadmin-backup-card, .fmh-app .superadmin-settings-card, .fmh-app .superadmin-report-result,
+.fmh-app .dashboard-card, .fmh-app .summary-box, .fmh-app .pet-card, .fmh-app .history-card,
+.fmh-app .profile-card, .fmh-app .appointment-form-card {
+  border: 1px solid var(--fmh-line);
+  border-radius: var(--fmh-radius);
+  box-shadow: var(--fmh-shadow);
+}
+.fmh-app .admin-stat-card, .fmh-app .admin-summary-card, .fmh-app .superadmin-stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+.fmh-app .admin-stat-card:hover, .fmh-app .admin-summary-card:hover, .fmh-app .superadmin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(38, 54, 74, 0.1);
+}
+
+/* Page title */
+.fmh-app .admin-page-heading h1, .fmh-app .admin-dashboard-heading h1, .fmh-app .superadmin-page-heading h1 {
+  color: var(--fmh-navy);
+  letter-spacing: -0.5px;
+}
+.fmh-app .admin-date, .fmh-app .superadmin-date { border: 1px solid var(--fmh-line); box-shadow: none; }
+
+/* Card title with a short description under it */
+.fmh-app .admin-panel-header { gap: 15px; flex-wrap: wrap; }
+.fmh-app .admin-panel-header h2, .fmh-app .superadmin-panel-header h2 { color: var(--fmh-navy); font-size: 21px; }
+.fmh-app .admin-panel-header p, .fmh-app .superadmin-panel-header p { margin-top: 4px; color: var(--fmh-muted); font-size: 14px; }
+
+/* Plain links inside the page (alerts, lists): a soft orange underline so they still look clickable */
+.fmh-app main a:not([class]) {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(232, 148, 39, 0.5);
+  text-underline-offset: 3px;
+}
+/* !important only because some links have an inline color */
+.fmh-app main a:not([class]):hover { color: var(--fmh-orange-dark) !important; text-decoration-color: currentColor; }
+/* The orange links at the right of a card title stay without a line */
+.fmh-app main .admin-panel-header a, .fmh-app main .superadmin-panel-header a { text-decoration: none; }
+
+/* Tables */
+.fmh-app .admin-table th, .fmh-app .superadmin-table th {
+  background: #fbf7f1;
+  color: #5b6474;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fmh-app .admin-table tbody tr, .fmh-app .superadmin-table tbody tr { transition: background 0.15s; }
+.fmh-app .admin-table tbody tr:hover td, .fmh-app .superadmin-table tbody tr:hover td { background: #fffaf3; }
+.fmh-app .admin-table th:first-child, .fmh-app .superadmin-table th:first-child { border-top-left-radius: 10px; }
+.fmh-app .admin-table th:last-child, .fmh-app .superadmin-table th:last-child { border-top-right-radius: 10px; }
+
+/* Buttons */
+.fmh-app .admin-add-btn, .fmh-app .superadmin-add-btn, .fmh-app .bookbtn {
+  box-shadow: 0 2px 6px rgba(232, 148, 39, 0.25);
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+.fmh-app .admin-add-btn:hover, .fmh-app .superadmin-add-btn:hover { box-shadow: 0 4px 12px rgba(232, 148, 39, 0.3); }
+.fmh-app .admin-add-btn:active, .fmh-app .superadmin-add-btn:active,
+.fmh-app .action-view:active, .fmh-app .action-edit:active, .fmh-app .action-delete:active { transform: translateY(1px); }
+.fmh-app .action-view, .fmh-app .action-edit, .fmh-app .action-delete { font-weight: 700; transition: background 0.15s; }
+.fmh-app button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Form fields outside .form-group (search bars, filters) get the same orange focus */
+.fmh-app .admin-tools input:focus, .fmh-app .admin-tools select:focus,
+.fmh-app .superadmin-settings-card input:focus, .fmh-app .superadmin-settings-card select:focus,
+.fmh-app .superadmin-table-card input:focus, .fmh-app .superadmin-table-card select:focus {
+  outline: none;
+  border-color: var(--fmh-orange);
+  box-shadow: 0 0 0 3px rgba(232, 148, 39, 0.15);
+}
+
+/* Super Admin: Recent System Activity list */
+.superadmin-activity-list { display: flex; flex-direction: column; }
+.superadmin-activity {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1ebe3;
+}
+.superadmin-activity > span {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--fmh-orange-soft);
+  font-size: 19px;
+}
+.superadmin-activity > div { flex: 1; min-width: 0; }
+.superadmin-activity strong { color: var(--fmh-navy); font-size: 15px; }
+.superadmin-activity p { margin: 3px 0 0; color: var(--fmh-muted); font-size: 14px; }
+.superadmin-activity small { flex-shrink: 0; color: #94a3b8; font-size: 12px; white-space: nowrap; }
+
+/* "Restore" and other <details> boxes */
+.fmh-app details > summary { list-style-position: inside; }
+
+/* ---------- 5. Tablet and phone ---------- */
+@media (max-width: 1100px) {
+  .panel-bar { padding: 0 20px; }
+  .panel-user-name { display: none; }
+}
+
+@media (max-width: 900px) {
+  .panel-bar .logo { width: auto; font-size: 20px; text-align: left; padding: 14px 0; }   /* animal.css centers the logo on phones */
+  .nav-toggle { display: inline-block; }
+  .panel-menu { display: none; order: 3; width: 100%; padding: 6px 0 14px; border-top: 1px solid #f1ebe3; }
+  .panel-menu.open { display: block; }
+  .panel-nav { flex-direction: column; gap: 2px; padding: 0; border-top: none; }
+  .panel-nav a { padding: 11px 14px; font-size: 15px; }
+  .panel-user { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid #f1ebe3; justify-content: space-between; flex-wrap: wrap; }
+  .panel-user-name { display: flex; text-align: left; }
+}
+
+@media (max-width: 700px) {
+  .fmh-app .admin-container, .fmh-app .admin-dashboard-container, .fmh-app .superadmin-container { padding: 22px 16px; }
+  .fmh-app .admin-page-heading h1, .fmh-app .admin-dashboard-heading h1, .fmh-app .superadmin-page-heading h1 { font-size: 28px; }
+
+  /* Summary numbers: 2 small cards per row instead of 1 big card */
+  .fmh-app .admin-stats, .fmh-app .admin-summary, .fmh-app .superadmin-stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fmh-app .admin-stat-card, .fmh-app .admin-summary-card, .fmh-app .superadmin-stat-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 0;
+    padding: 14px;
+  }
+  .fmh-app .admin-stat-icon, .fmh-app .admin-summary-icon, .fmh-app .superadmin-stat-icon { width: 38px; height: 38px; font-size: 19px; }
+  .fmh-app .admin-stat-card strong, .fmh-app .superadmin-stat-card strong, .fmh-app .admin-summary-card h3 { font-size: 22px; }
+
+  .fmh-app .admin-table-card, .fmh-app .admin-panel, .fmh-app .superadmin-panel { padding: 16px; }
+  .fmh-app .admin-panel-header h2, .fmh-app .superadmin-panel-header h2 { font-size: 19px; }
+
+  /* Tables scroll sideways inside their card (the page itself does not) */
+  .fmh-app .admin-table-card, .fmh-app .superadmin-table-card, .fmh-app .admin-table-container { -webkit-overflow-scrolling: touch; }
+  .fmh-app .admin-table th, .fmh-app .admin-table td { white-space: nowrap; }
+
+  .superadmin-activity { flex-wrap: wrap; }
+  .superadmin-activity small { width: 100%; padding-left: 54px; }
+}
