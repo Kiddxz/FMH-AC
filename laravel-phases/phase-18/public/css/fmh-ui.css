@@ -283,6 +283,76 @@
 .activity-empty { padding: 30px 10px; text-align: center; color: var(--fmh-muted); }
 .activity-empty span { display: block; margin-bottom: 8px; font-size: 34px; }
 
+/* Dashboards: "Today at the Clinic" (two boxes side by side) */
+.clinic-today-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.clinic-box { padding: 16px; border: 1px solid var(--fmh-line); border-radius: 12px; background: #fffdfa; }
+.clinic-box-title { margin: 0 0 12px; color: var(--fmh-navy); font-size: 16px; }
+.clinic-collected {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f3faf5;
+  color: #1f6b3d;
+}
+.clinic-empty { color: #94a3b8; }
+
+/* Recent Pet Registrations: one row per pet */
+.pet-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.fmh-app main a.pet-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 1px solid #f1ebe3;
+  border-radius: 10px;
+  background: white;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.fmh-app main a.pet-row:hover { border-color: var(--fmh-orange); transform: translateX(2px); }
+.pet-avatar { display: flex; flex-shrink: 0; justify-content: center; align-items: center; width: 38px; height: 38px; border-radius: 50%; font-size: 19px; }
+.pet-avatar.pet-dog { background: var(--fmh-orange-soft); }
+.pet-avatar.pet-cat { background: #e8f0ff; }
+.pet-avatar.pet-other { background: #e7f6ec; }
+.pet-info { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.pet-info strong { color: var(--fmh-navy); font-size: 15px; }
+.pet-info small { overflow: hidden; color: var(--fmh-muted); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.pet-date { flex-shrink: 0; padding: 3px 10px; border-radius: 999px; background: #f4f1ec; color: #5b6474; font-size: 12px; font-weight: 700; }
+
+/* Inventory Alerts: three colored boxes */
+.fmh-app .alert-card { border-left: 5px solid var(--fmh-orange); }
+.alert-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.alert-box { padding: 14px; border: 1px solid; border-top-width: 4px; border-radius: 12px; }
+.alert-box h3 { margin: 0 0 10px; font-size: 15px; }
+.alert-low { border-color: #f6d3a6; background: #fffaf2; }
+.alert-low h3 { color: #b2610c; }
+.alert-expiring { border-color: #f3dc9b; background: #fffcf0; }
+.alert-expiring h3 { color: #9a6b00; }
+.alert-expired { border-color: #f4bcbc; background: #fff7f7; }
+.alert-expired h3 { color: #b33a3a; }
+.fmh-app main a.alert-row {
+  display: block;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(38, 54, 74, 0.08);
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.15s;
+}
+.fmh-app main a.alert-row:last-child { margin-bottom: 0; }
+.fmh-app main a.alert-row:hover { box-shadow: 0 3px 10px rgba(38, 54, 74, 0.14); }
+.alert-name { display: block; color: var(--fmh-navy); font-size: 14.5px; font-weight: 700; }
+.alert-detail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 3px; color: var(--fmh-muted); font-size: 13px; }
+.alert-tag { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.tag-red { background: #fde8e8; color: #b33a3a; }
+.tag-orange { background: #fff1df; color: #b2610c; }
+.stock-bar { display: block; height: 6px; margin-top: 8px; overflow: hidden; border-radius: 999px; background: #f1ebe3; }
+.stock-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #d9534f, #e89427); }
+.alert-none { padding: 10px 12px; border-radius: 10px; background: white; color: #64748b; font-size: 14px; }
+
 /* "Restore" and other <details> boxes */
 .fmh-app details > summary { list-style-position: inside; }
 
