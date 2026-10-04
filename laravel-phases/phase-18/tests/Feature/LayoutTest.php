@@ -53,6 +53,17 @@ class LayoutTest extends TestCase
         }
     }
 
+    public function test_recent_activity_is_a_colored_timeline(): void
+    {
+        $this->post('/login', ['email' => 'superadmin@fmhanimalclinic.com', 'password' => 'wrong-password']);   // a failed login (red)
+
+        $page = $this->actingAs($this->user('superadmin@fmhanimalclinic.com'))->get('/superadmin')->assertOk()
+            ->assertSee('class="activity-timeline"', false)
+            ->assertSee('tone-red', false)
+            ->assertSee('View all activity logs');
+        $page->assertViewHas('recentActivity', fn ($logs) => $logs->contains('action', 'login_failed'));
+    }
+
     public function test_customer_portal_uses_the_polish_stylesheet(): void
     {
         $this->actingAs($this->user('owner@fmhanimalclinic.com'))->get('/portal')->assertOk()

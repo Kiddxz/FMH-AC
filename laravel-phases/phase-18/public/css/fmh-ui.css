@@ -200,30 +200,88 @@
   box-shadow: 0 0 0 3px rgba(232, 148, 39, 0.15);
 }
 
-/* Super Admin: Recent System Activity list */
-.superadmin-activity-list { display: flex; flex-direction: column; }
-.superadmin-activity {
+/* Super Admin dashboard: Recent System Activity (a timeline with colored icons) */
+.activity-panel-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+.fmh-app main .activity-view-all {
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--fmh-orange-soft);
+  color: #c46f0f;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fmh-app main .activity-view-all:hover { background: var(--fmh-orange); color: white; }
+
+.activity-timeline { position: relative; margin: 0; padding: 0; list-style: none; }
+.activity-timeline::before {            /* the line that joins the icons */
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 21px;
+  width: 2px;
+  background: #f1e6d8;
+}
+.activity-item {
+  position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid #f1ebe3;
+  gap: 16px;
+  padding: 12px 14px 12px 0;
+  border-radius: 12px;
+  transition: background 0.15s;
 }
-.superadmin-activity > span {
+.activity-item:hover { background: #fffaf3; }
+.activity-icon {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-shrink: 0;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--fmh-orange-soft);
+  width: 44px;
+  height: 44px;
+  border: 3px solid white;
+  border-radius: 50%;
   font-size: 19px;
+  box-shadow: 0 0 0 1px var(--tone-line);
+  background: var(--tone-soft);
 }
-.superadmin-activity > div { flex: 1; min-width: 0; }
-.superadmin-activity strong { color: var(--fmh-navy); font-size: 15px; }
-.superadmin-activity p { margin: 3px 0 0; color: var(--fmh-muted); font-size: 14px; }
-.superadmin-activity small { flex-shrink: 0; color: #94a3b8; font-size: 12px; white-space: nowrap; }
+.activity-body { flex: 1; min-width: 0; }
+.activity-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.activity-title strong { color: var(--fmh-navy); font-size: 15px; }
+.activity-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--tone-soft);
+  color: var(--tone-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+.activity-body p { margin: 5px 0 6px; color: #475569; font-size: 14px; line-height: 1.45; }
+.activity-meta { display: flex; flex-wrap: wrap; gap: 14px; color: #94a3b8; font-size: 12.5px; }
+.activity-time {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--fmh-navy);
+  font-size: 13px;
+  font-weight: 700;
+}
+.activity-time small { color: #94a3b8; font-size: 12px; font-weight: 500; }
+
+/* Colors: red = needs attention, green = added / finished, blue = sign-in / account, orange = changes */
+.tone-orange { --tone-soft: #fff1df; --tone-line: #f6d3a6; --tone-text: #b2610c; }
+.tone-green  { --tone-soft: #e7f6ec; --tone-line: #b9e2c6; --tone-text: #287a43; }
+.tone-blue   { --tone-soft: #e8f0ff; --tone-line: #bfd2fb; --tone-text: #3459b8; }
+.tone-red    { --tone-soft: #fde8e8; --tone-line: #f4bcbc; --tone-text: #b33a3a; }
+.activity-item.tone-red .activity-body p { color: #8f2f2f; }
+
+.activity-empty { padding: 30px 10px; text-align: center; color: var(--fmh-muted); }
+.activity-empty span { display: block; margin-bottom: 8px; font-size: 34px; }
 
 /* "Restore" and other <details> boxes */
 .fmh-app details > summary { list-style-position: inside; }
@@ -268,6 +326,6 @@
   .fmh-app .admin-table-card, .fmh-app .superadmin-table-card, .fmh-app .admin-table-container { -webkit-overflow-scrolling: touch; }
   .fmh-app .admin-table th, .fmh-app .admin-table td { white-space: nowrap; }
 
-  .superadmin-activity { flex-wrap: wrap; }
-  .superadmin-activity small { width: 100%; padding-left: 54px; }
+  .activity-time { display: none; }         /* on a phone the "🕒 5 minutes ago" line is enough */
+  .activity-item { gap: 12px; padding-right: 0; }
 }
