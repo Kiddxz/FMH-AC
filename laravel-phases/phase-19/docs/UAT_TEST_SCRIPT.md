@@ -23,8 +23,8 @@ Tester: ______________________  Date: ______________  Browser / Device: ________
 | ID | Role | Steps | Expected Result | Result | Remarks |
 |---|---|---|---|---|---|
 | A-01 | All | Open the Home page and click **Login**. Choose each account type and log in with its demo account. | Each account opens its own dashboard (Portal, Staff, Admin or Super Admin). | | |
-| A-02 | Guest | Log in with a correct email and a wrong password. | "These credentials do not match" message; not logged in. | | |
-| A-03 | Guest | Enter a wrong password many times in a row. | After several tries the login is blocked for a short time with a "Too many attempts" message. | | |
+| A-02 | Guest | Log in with a correct email and a wrong password. | "Invalid email or password." message; not logged in. | | |
+| A-03 | Guest | Enter a wrong password many times in a row. | After several tries: "Too many login attempts. Please try again in … seconds." | | |
 | A-04 | Guest | Click **Create Account**, fill in the form and submit. Open `storage/logs/laravel.log` to get the 6-digit code and enter it. | Account is created and the customer portal opens. | | |
 | A-05 | Guest | Click **Forgot Password**, enter the owner's email, get the code from the log, set a new password, then log in with it. | Password is changed; the new password works and the old one does not. | | |
 | A-06 | Guest | While logged out, type `/staff`, `/admin` and `/superadmin` in the address bar. | Each address goes to the Login page. | | |
