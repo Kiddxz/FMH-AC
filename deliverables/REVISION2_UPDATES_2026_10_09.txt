@@ -1,0 +1,72 @@
+SUPREMEDENT — REVISION 2 (2026-10-09)
+Based on "revision2.pdf". Database changes are applied automatically the first time any page loads
+(config/schema.php, tracked by clinic_settings.schema_revision = 2). REVISION2_UPGRADE_2026_10_09.sql
+contains the same changes if you prefer to run them in phpMyAdmin.
+
+PATIENT
+- Landing > About: "ABOUT" label, "Your Smile, Our Priority", one centred paragraph, three compact cards
+  (Our Mission, Our Vision, Visit Our Clinic + Find directions).
+- Landing > Contact: "CONTACT SUPREMEDENT" and "Questions before your appointment?" centred, heading on one line,
+  tighter spacing.
+- Forgot password now sends a password reset EMAIL: it contains a one-time reset link and a 6-digit code
+  (both expire in 10 minutes). Using either one opens the "Create a New Password" page.
+  The link uses the address you open the site with on localhost/LAN (XAMPP). For a public domain, set
+  'app_url' => 'https://your-domain/supremedent' in config/mail.local.php.
+- Sign up: "Enter the 6-digit code sent to your email." now shows above the code-expiry message.
+- Sign in: 5 wrong attempts lock the email for 5 minutes (live countdown). After the lock, another wrong
+  password locks it for 10 minutes. A correct sign-in or a password reset clears the lock.
+- Notifications: the three counters are one plain box. Every notification is clickable and opens a pop-up with
+  the details (and the appointment's date, time, service, reason, marked teeth and status).
+- Dashboard: "Book Appointment" is dark teal and opens the booking pop-up directly. "My Calendar" also shows the
+  times already booked by other patients (time only, no names, for privacy).
+- Messages: patients can only message the Assistant. The Assistant/Dentist tabs and < > arrows were removed.
+- Verify Contact Number: six digit boxes, verified automatically when the 6th digit is typed (no button).
+  1st wrong code -> wait 15 seconds, then try again. 2nd wrong code -> the code is cancelled and
+  "Resend code" becomes available after 30 seconds. "Didn't get the code? Resend code" (30-second cooldown).
+- SMS OTP now uses IPROG SMS with the clinic's API token (config/sms.local.php). Each SMS uses IPROG credits.
+  For offline testing set 'log_only' => true (codes go to storage/otp.log).
+- "Dental Chart" was removed from the sidebar. Marking teeth now happens while booking:
+  New Appointment -> Select Schedule (calendar + 30-minute time slots, 3-hour cutoff) -> Continue to Dental
+  Details -> 3D Dental Model (click teeth, Reset view, Clear All, Save Marked Teeth) + Dental Service +
+  Reason/Concern -> Book Appointment -> "Appointment Booked Successfully!" pop-up.
+- Bookings are approved automatically and given an available dentist. Patients can View and Cancel their
+  upcoming appointments.
+
+ASSISTANT
+- The calendar icon beside the bell was removed (also for the Dentist).
+- Appointment Requests: bookings are already approved; each row has a "View" button showing the date, time,
+  dental service, reason/concern and the teeth the patient clicked (chart), with "Full Details & 3D Model"
+  and "Cancel Appointment". Walk-in and Staff Availability panels are unchanged.
+- Notifications: new bookings, cancellations and walk-ins appear as clickable notifications.
+- Register Patient: new fixed-size layout (First/Last Name, Email + Email OTP + Send OTP, Address, Birthday,
+  Gender, Create Patient). The patient's email must be verified with the code; the account is then created with
+  a random password, and the username + temporary password are EMAILED to the patient.
+
+DENTIST
+- Appointments: calendar shows every booking (who booked each date/time) + "Appointment Requests" list with
+  View, Cancel and Mark Completed.
+- Treatment Plans > Removable Restoration: Interactive 3D Model using assets/models/Removable.glb
+  (meshes Tooth_18...Tooth_28 upper, Tooth_48...Tooth_38 lower). Clicking a tooth on the model or on the
+  "Teeth to Replace" chart selects it; Type of Work cards, Stage, Type of Teeth, Shade/Mould, Order Summary,
+  "Save as Draft" and "Create Restoration Plan".
+- Treatment Plans > Fixed Restoration: Chart for Staining from C.glb (Incisor_Zone_Grid, Molar_Zone_Grid),
+  Occlusal Staining, Translucency, Metal Design 1-4 from M1.glb and 5-9 from M2.glb, Pontic Design from P.glb
+  (Hygienic, Modified RL, Bullet, Ridge Lap with their dark bases), Tooth to be Restored chart (UR/UL/LR/LL).
+- "Create Restoration Plan" saves a Draft order as "Sent"; "Save as Draft" keeps it as Draft (teeth optional).
+
+ALL ROLES / FIXES
+- Realtime: pages update by themselves (new bookings, cancellations, notifications, records, plans) without
+  pressing refresh. While you are typing or a pop-up is open, a "New updates are available - Refresh" bar is
+  shown instead, so nothing you are editing is lost. Bell and message badges update live.
+- Fixed: password change crashed for staff (includes/profile_settings.php now uses valid_strong_password()).
+  The staff profile form also has a CSRF check now.
+- Fixed: appointments can now be cancelled by the patient, assistant, dentist and super admin
+  (status "cancelled", with optional reason; the patient and staff are notified).
+- Existing "pending" appointments are approved by the upgrade, because patient bookings no longer need approval.
+- Appointment slots default to 30 minutes from 9:00 AM to 5:30 PM (Super Admin settings still apply).
+
+NEW FILES
+api/live.php, api/notifications.php, assets/css/revision2_2026_10.css, assets/js/live_updates.js,
+assets/js/restoration_3d.js, assistant/send_register_otp.php, includes/appointment_helpers.php,
+includes/appointment_view_modal.php, includes/live.php, includes/notifications_center.php,
+REVISION2_UPGRADE_2026_10_09.sql
