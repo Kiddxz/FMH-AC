@@ -54,6 +54,15 @@ DENTIST
   (Hygienic, Modified RL, Bullet, Ridge Lap with their dark bases), Tooth to be Restored chart (UR/UL/LR/LL).
 - "Create Restoration Plan" saves a Draft order as "Sent"; "Save as Draft" keeps it as Draft (teeth optional).
 
+SIGN IN TO ALL PORTALS AT ONCE (added 2026-10-10)
+- The one-login-per-browser limit was removed. Patient, Assistant, Dentist and Super Admin each have their
+  own session cookie (SUPREMEDENT_PATIENT / _ASSISTANT / _DENTIST / _SUPERADMIN), so you can open four tabs
+  in the same browser and sign in as a different role in each; all four stay signed in.
+- Logout only signs out the portal you clicked it in; the other portals stay signed in.
+- Signing in again to the SAME portal (e.g. a second patient account) replaces the previous account of that
+  portal. Use a private/incognito window or another browser for two accounts of the same role.
+- The 30-minute idle timeout per portal is unchanged (config/security.php: SUPREMEDENT_SESSION_IDLE_TIMEOUT).
+
 ALL ROLES / FIXES
 - Realtime: pages update by themselves (new bookings, cancellations, notifications, records, plans) without
   pressing refresh. While you are typing or a pop-up is open, a "New updates are available - Refresh" bar is
