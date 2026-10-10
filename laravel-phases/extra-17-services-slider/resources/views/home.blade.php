@@ -247,6 +247,19 @@
         });
       });
 
+      // Filter buttons: All / Book online / Visit the clinic
+      document.querySelectorAll('.service-filters button').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          document.querySelectorAll('.service-filters button').forEach(function (other) {
+            other.classList.toggle('active', other === tab);
+            other.setAttribute('aria-selected', other === tab ? 'true' : 'false');
+          });
+          document.querySelectorAll('.service-card').forEach(function (card) {
+            card.hidden = tab.dataset.filter !== 'all' && card.dataset.kind !== tab.dataset.filter;
+          });
+        });
+      });
+
       // Services slider: arrows, dots, and drag with the mouse (phones swipe by themselves)
       var slider = document.getElementById('serviceSlider');
       var prev = document.getElementById('servicePrev');
@@ -298,22 +311,11 @@
       slider.addEventListener('click', function (event) {
         if (dragged) { event.stopPropagation(); event.preventDefault(); dragged = false; }
       }, true);
-      updateSlider();
-
-      // Filter buttons: All / Book online / Visit the clinic
+      // after a filter button: back to the first page
       document.querySelectorAll('.service-filters button').forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          document.querySelectorAll('.service-filters button').forEach(function (other) {
-            other.classList.toggle('active', other === tab);
-            other.setAttribute('aria-selected', other === tab ? 'true' : 'false');
-          });
-          document.querySelectorAll('.service-card').forEach(function (card) {
-            card.hidden = tab.dataset.filter !== 'all' && card.dataset.kind !== tab.dataset.filter;
-          });
-          slider.scrollLeft = 0;
-          updateSlider();
-        });
+        tab.addEventListener('click', function () { slider.scrollLeft = 0; updateSlider(); });
       });
+      updateSlider();
 
       var close = function () { dialog.close(); };
       document.getElementById('serviceDialogClose').addEventListener('click', close);
