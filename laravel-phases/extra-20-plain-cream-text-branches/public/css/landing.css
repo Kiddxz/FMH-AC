@@ -130,7 +130,7 @@ a.contact-row:hover { color: #e89427; }
 @media (max-width: 860px) {
   .info-wrap { grid-template-columns: 1fr; }
   .branch { align-items: flex-start; }
-    .landing-services h2, .landing-info h2 { font-size: 32px; }
+  .landing-services h2, .landing-info h2 { font-size: 32px; }
 }
 
 /* animal.css has big text for the old "About Us" section (#aboutus p): keep this section compact */
