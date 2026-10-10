@@ -38,7 +38,7 @@ class LandingPageTest extends TestCase
             ->assertSee('class="service-option checked"', false);
 
         // services that need the vet first are not bookable online
-        $page->assertSee('Visit or call the clinic')->assertSee('This service needs the veterinarian to see your pet first');
+        $page->assertSee('Visit the clinic')->assertSee('This service needs the veterinarian to see your pet first');
     }
 
     public function test_clinic_hours_come_from_the_settings(): void
