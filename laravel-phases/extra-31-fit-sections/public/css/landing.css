@@ -1,0 +1,178 @@
+/*
+  FMH Animal Clinic - landing.css (home page only)
+  Services cards with a pop-up, clinic hours, branches and social links.
+  Same colors as the rest of the system: orange #e89427, dark blue-gray #26364a, cream #fff7ec.
+*/
+
+/* ---------- Hero (no photo: plain cream, same color as the Services) ---------- */
+.hero { position: relative; overflow: hidden; min-height: calc(86vh - 90px); background: #faf6f0; color: #26364a; }
+.hero > div { position: relative; z-index: 1; }
+.hero-kicker { display: inline-block; margin-bottom: 18px; padding: 6px 14px; border-radius: 999px; background: #fff1df; color: #c46f0c; font-size: 14px; font-weight: 700; }
+.hero h1 { color: #26364a; }
+.hero h1 span { color: #e89427; }
+.hero p { color: #4b5563; }
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.bookbtn-outline { border: 2px solid #e89427; background: #fff; color: #e89427; padding: 13px 30px; }
+.bookbtn-outline:hover { background: #fff1df; color: #c46f0c; }
+@media (max-width: 520px) { .hero h1 { font-size: 36px; } .hero p { font-size: 17px; } }
+
+/* ---------- Services (slider) ---------- */
+.landing-services { position: relative; overflow: hidden; padding: 40px 7% 60px; background: #faf6f0; }
+.landing-services h2 { color: #26364a; font-size: 36px; margin-bottom: 8px; }
+.services-head { max-width: 720px; margin: 0 auto 24px; text-align: center; }
+.services-kicker { display: inline-block; margin-bottom: 8px; padding: 4px 12px; border-radius: 999px; background: #fff1df; color: #c46f0c; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.services-head > p { color: #6b7280; font-size: 17px; line-height: 1.6; margin-bottom: 22px; }
+.service-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.service-filters button { padding: 9px 18px; border: 1px solid #eadfce; border-radius: 999px; background: #fff; color: #26364a; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+.service-filters button:hover { border-color: #e89427; }
+.service-filters button.active { border-color: #e89427; background: #e89427; color: #fff; }
+
+/* the track: one row, 4 cards per view on a computer, the rest are to the right */
+.slider-frame { position: relative; max-width: 1200px; margin: 0 auto; }
+.service-slider { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 48px) / 4); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain; padding: 6px 2px 14px; scrollbar-width: none; }
+.service-slider::-webkit-scrollbar { display: none; }
+.service-slider.dragging { scroll-snap-type: none; scroll-behavior: auto; cursor: grabbing; user-select: none; }
+.service-slider.dragging .service-card { pointer-events: none; }
+
+/* round white arrows on the left and right edge (like a shop's product slider) */
+.slider-arrow { position: absolute; z-index: 2; top: 38%; display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border: none; border-radius: 50%; background: #fff; color: #26364a; box-shadow: 0 6px 18px rgba(38, 54, 74, 0.18); cursor: pointer; transform: translateY(-50%); transition: opacity 0.2s, background 0.2s, color 0.2s; }
+.slider-arrow svg { width: 24px; height: 24px; }
+.slider-arrow.prev { left: -22px; }
+.slider-arrow.next { right: -22px; }
+.slider-arrow:hover:not(:disabled) { background: #e89427; color: #fff; }
+.slider-arrow:disabled { opacity: 0; pointer-events: none; }
+
+/* a card: big picture on top (photo, or the icon until the clinic sends a photo), text below */
+.service-card { display: flex; flex-direction: column; overflow: hidden; padding: 0; border: 1px solid #eee6db; border-radius: 18px; background: #fff; color: #26364a; font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start; box-shadow: 0 4px 14px rgba(38, 54, 74, 0.06); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+.service-card[hidden] { display: none; }
+.service-card:hover, .service-card:focus-visible { transform: translateY(-4px); border-color: #e89427; box-shadow: 0 14px 28px rgba(232, 148, 39, 0.18); outline: none; }
+.service-photo { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; background: linear-gradient(140deg, #fff1df, #ffd9a8); color: #e89427; }
+.service-card:nth-child(4n+2) .service-photo { background: linear-gradient(140deg, #fdeee6, #f9cdb4); color: #d9692c; }
+.service-card:nth-child(4n+3) .service-photo { background: linear-gradient(140deg, #eef2f7, #cfdbe8); color: #26364a; }
+.service-card:nth-child(4n+4) .service-photo { background: linear-gradient(140deg, #eef7ef, #cde8d2); color: #287a43; }
+.service-photo img { width: 100%; height: 100%; object-fit: cover; }
+.service-photo .service-icon { display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 96px; border-radius: 50%; background: rgba(255, 255, 255, 0.7); transition: transform 0.3s; }
+.service-photo .service-icon svg { width: 46px; height: 46px; }
+.service-card:hover .service-icon { transform: scale(1.08); }
+.service-photo small { position: absolute; left: 12px; top: 12px; padding: 4px 10px; border-radius: 999px; background: #fff; color: #6b7280; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(38, 54, 74, 0.1); }
+.service-photo .book-tag { color: #287a43; }
+.service-body { display: flex; flex: 1; flex-direction: column; gap: 6px; padding: 16px 18px 18px; }
+.service-name { font-size: 17px; font-weight: 700; }
+.service-teaser { flex: 1; color: #6b7280; font-size: 13.5px; line-height: 1.5; }
+.service-more { margin-top: 4px; color: #e89427; font-size: 14px; font-weight: 700; }
+
+.slider-dots { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+.slider-dots button { width: 9px; height: 9px; padding: 0; border: none; border-radius: 999px; background: #e2d6c4; cursor: pointer; transition: width 0.2s, background 0.2s; }
+.slider-dots button.active { width: 26px; background: #e89427; }
+
+@media (max-width: 1100px) { .service-slider { grid-auto-columns: calc((100% - 32px) / 3); } }
+@media (max-width: 760px) {
+  .service-slider { grid-auto-columns: calc((100% - 16px) / 2); }
+  .slider-arrow.prev { left: -10px; }
+  .slider-arrow.next { right: -10px; }
+}
+@media (max-width: 520px) {
+  .landing-services { padding: 32px 16px 48px; }
+  .service-filters button { padding: 8px 14px; font-size: 13px; }
+  .service-slider { grid-auto-columns: 72%; gap: 12px; }
+  .slider-arrow { width: 42px; height: 42px; }
+  .slider-arrow svg { width: 20px; height: 20px; }
+}
+
+/* ---------- Service pop-up ---------- */
+.service-dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); margin: auto; padding: 0; border: none; border-radius: 18px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3); color: #26364a; }
+.service-dialog::backdrop { background: rgba(20, 26, 36, 0.55); }
+.service-dialog-photo { display: flex; align-items: center; justify-content: center; height: 260px; background: linear-gradient(135deg, #fff1df, #ffe2bd); color: #e89427; overflow: hidden; }
+.service-dialog-photo img { width: 100%; height: 100%; object-fit: cover; }
+.service-dialog-photo svg { width: 96px; height: 96px; }
+.service-dialog-body { padding: 22px 26px 26px; }
+.service-dialog-body h3 { font-size: 26px; margin-bottom: 8px; }
+.service-dialog-body p { color: #4b5563; font-size: 16px; line-height: 1.6; }
+.service-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.service-dialog-actions a, .service-dialog-actions button { padding: 11px 20px; border: none; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.service-dialog-actions .primary { background: #e89427; color: #fff; }
+.service-dialog-actions .secondary { background: #f3f4f6; color: #26364a; }
+.service-dialog-note { margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: #fff7ec; color: #8a5a12; font-size: 14px; }
+.service-dialog-close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.9); color: #26364a; font-size: 18px; cursor: pointer; }
+
+/* ---------- About Us ---------- */
+.about, .contact-sec { padding: 40px 7% 60px; background: #faf6f0; border-top: 1px solid #efe6d8; color: #26364a; }
+.sec-head { max-width: 760px; margin: 0 auto 26px; text-align: center; }
+.sec-head h2 { margin-bottom: 8px; color: #26364a; font-size: 36px; }
+.sec-head p { color: #4b5563; font-size: 17px; line-height: 1.7; }
+.about-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
+.about-card { padding: 24px 22px; border: 1px solid #eee6db; border-radius: 18px; background: #fff; box-shadow: 0 4px 14px rgba(38, 54, 74, 0.05); transition: transform 0.2s, border-color 0.2s; }
+.about-card:hover { transform: translateY(-4px); border-color: #e89427; }
+.about-icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin-bottom: 14px; border-radius: 14px; background: #fff1df; color: #e89427; }
+.about-icon svg { width: 26px; height: 26px; }
+.about-card h3 { margin-bottom: 8px; font-size: 18px; }
+.about-card p { color: #6b7280; font-size: 14.5px; line-height: 1.6; }
+.about-stats { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 28px auto 0; border-radius: 18px; background: #26364a; overflow: hidden; }
+.about-stats div { padding: 22px 12px; text-align: center; border-left: 1px solid rgba(255, 255, 255, 0.1); }
+.about-stats div:first-child { border-left: none; }
+.about-stats strong { display: block; color: #f5b660; font-size: 28px; }
+.about-stats span { color: #cfd8e3; font-size: 14px; }
+
+/* ---------- Contact ---------- */
+.contact-grid { display: grid; grid-template-columns: minmax(300px, 1fr) 1.5fr; gap: 28px; align-items: start; max-width: 1200px; margin: 0 auto; }
+.contact-card { padding: 20px 22px 14px; border: 1px solid #eee6db; border-radius: 18px; background: #fff; }
+.contact-card h3, .branch-title { margin-bottom: 10px; color: #26364a; font-size: 19px; }
+.contact-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #f1ebe2; color: #26364a; font-size: 15.5px; font-weight: 700; text-decoration: none; }
+.contact-row:first-of-type { border-top: none; }
+a.contact-row:hover { color: #e89427; }
+.contact-row small { display: block; color: #8a8f98; font-size: 12px; font-weight: 500; }
+.contact-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: #e89427; color: #fff; }
+.contact-icon svg { width: 18px; height: 18px; }
+.social-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; padding-top: 14px; border-top: 1px solid #f1ebe2; }
+.social-chips a, .social-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #eadfce; border-radius: 999px; background: #fff; color: #26364a; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+.social-chips a:hover { border-color: #e89427; color: #e89427; }
+.social-chips svg { width: 16px; height: 16px; color: #e89427; }
+.hours-box { margin-top: 14px; padding: 18px 22px; border-radius: 18px; background: #26364a; color: #fff; }
+.hours-box h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 18px; }
+.hours-box h3 svg { width: 20px; height: 20px; color: #f5b660; }
+.hours-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 15px; }
+.hours-row:first-of-type { border-top: none; }
+.hours-row strong { color: #f5b660; }
+.branch-list { display: grid; gap: 12px; }
+.branch { padding: 16px 22px; border: 1px solid #eee6db; border-left: 5px solid #e89427; border-radius: 16px; background: #fff; transition: box-shadow 0.2s; }
+.branch:hover { box-shadow: 0 10px 24px rgba(38, 54, 74, 0.08); }
+.branch h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; color: #26364a; font-size: 18px; }
+.branch .branch-tag { padding: 2px 10px; border-radius: 999px; background: #e6f5e9; color: #287a43; font-size: 12px; font-weight: 700; }
+.branch p { display: flex; align-items: flex-start; gap: 8px; margin: 6px 0 0; color: #4b5563; font-size: 15px; line-height: 1.5; }
+.branch p svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; color: #e89427; }
+.branch-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.branch-actions a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: #fff1df; color: #8a5a12; font-size: 13.5px; font-weight: 700; text-decoration: none; }
+.branch-actions a.call { background: #26364a; color: #fff; }
+.branch-actions a:hover { filter: brightness(0.96); }
+.branch-actions svg { width: 15px; height: 15px; }
+
+@media (max-width: 1000px) {
+  .about-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .about, .contact-sec { padding: 32px 16px 48px; }
+  .sec-head h2 { font-size: 30px; }
+  .about-grid, .about-stats { grid-template-columns: 1fr 1fr; }
+  .about-stats div:nth-child(3) { border-left: none; }
+  .landing-services h2 { font-size: 32px; }
+}
+
+/* animal.css has big text for the old "About Us" and "Contact" sections (#aboutus p, #contact p): use the new sizes */
+#aboutus.about h2, #contact.contact-sec h2 { margin-bottom: 8px; font-size: 36px; }
+#aboutus.about .sec-head p, #contact.contact-sec .sec-head p { max-width: none; margin-bottom: 0; font-size: 17px; line-height: 1.7; }
+#aboutus.about .about-card p { max-width: none; margin: 0; font-size: 14.5px; line-height: 1.6; }
+#contact.contact-sec .branch p { margin: 6px 0 0; font-size: 15px; }
+@media (max-width: 560px) { #aboutus.about h2, #contact.contact-sec h2 { font-size: 30px; } }
+
+/* Branch cards: the buttons on the right, so the whole Contact section fits on the screen */
+.branch-body { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; align-items: center; }
+.branch-body > * { grid-column: 1; }
+.branch-body .branch-actions { grid-column: 2; grid-row: 1 / span 3; flex-direction: column; margin-top: 0; }
+@media (max-width: 700px) {
+  .branch-body { display: block; }
+  .branch-body .branch-actions { flex-direction: row; margin-top: 10px; }
+}
+
+/* The menu stays on top (90px): a menu link puts the section right under it, without a big gap */
+html { scroll-padding-top: 90px; }
