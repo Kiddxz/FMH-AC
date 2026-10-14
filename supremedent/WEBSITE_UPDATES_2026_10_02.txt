@@ -1,0 +1,62 @@
+SupremeDent Website Update — 2026-10-02
+
+Implemented from Website (1).docx:
+
+LANDING / AUTH
+- Reduced excess spacing and centered landing-page content, service sections, about content, and contact layout.
+- Made login/signup layouts more compact and centered.
+- Kept live email/password validation and added red/yellow/green password-strength meter states.
+- Improved password show/hide button labels and compact field sizing.
+
+SHARED PATIENT / ASSISTANT / DENTIST UI
+- Simplified top bar by removing search, message, and calendar shortcuts for the three role portals.
+- Removed the profile dropdown arrow.
+- Moved Logout to the bottom of the role sidebars.
+- Added a persistent floating Message Center button.
+- Message Center shows conversation history, "No conversations" when empty, and supports new messages/replies.
+- Patient New Message flow includes Assistant/Dentist recipient switching.
+
+PATIENT
+- Dashboard changed to Recent Activity + 3 compact metric cards + calendar.
+- Removed unread-notification dashboard card and "My Dental Care" action block.
+- Sidebar no longer duplicates Notifications/Profile links.
+- Dental Chart spacing and 3D model sizing/interactions refined.
+- Removed the separate "Dentist's Clinical Chart" card from patient Dental Chart.
+- Dental Records, Treatment History, and Treatment Plans use compact list/table layouts.
+- Birthday immediately calculates age in Profile.
+- Profile field sizing reduced/fitted.
+- SMS OTP is temporarily written to storage/otp.log for local development/testing.
+- Patient appointment page is list-first with a New Appointment button.
+- Incomplete profiles receive a Complete Profile popup before booking.
+- Booking uses the Monday-Saturday calendar, shows Sundays closed/red, and asks for confirmation before request submission.
+- Appointment list shows Pending, Approved, and Declined labels; only Pending requests can be rescheduled.
+
+ASSISTANT
+- Dashboard simplified to hero + four working metric cards.
+- Removed Calendar link from assistant sidebar.
+- Appointment Requests are shown first; Appointment View opens the calendar.
+- Calendar shows patient names and date-click popup with appointment count/details.
+- View action opens patient, service, reason, 2D dental marks, and 3D odontogram.
+- Removed the top Register Patient button and View action column from the Patients list.
+- Existing Create Chart/clinical examination workflow retained and compacted.
+
+DENTIST
+- Dashboard simplified to hero + four working metric cards.
+- Dentist sidebar now uses "Dental Charts" instead of "Create Chart".
+- Appointment calendar fills the main view; clicking a date opens patient appointment details.
+- Appointment View opens patient name, service, reason, marked dental chart, and 3D odontogram.
+- Dental Charts opens a patient list first, then each patient's chart records with View/Edit/Delete/Create actions.
+- Chart editor headings now use Dental Chart naming; existing save/edit flow retained.
+- Chart View keeps Print and PDF/print workflow.
+- Unified Patient History now uses a quick patient search bar + Search button and displays matching patients.
+- Existing restoration Treatment Plan workflow retained.
+
+TECHNICAL FIXES
+- Added assets/js/loaders/GLTFLoader.js and assets/js/controls/OrbitControls.js paths required by current 3D imports.
+- Added api/messages.php for floating Message Center AJAX workflow.
+- Added assets/css/website_updates.css as the final UI override stylesheet.
+- PHP syntax validation passed for every PHP file in the project.
+- Inline JavaScript syntax checks passed for the modified interactive pages.
+
+NOTE
+The temporary SMS OTP log is intentionally a development/testing feature. Disable/remove OTP logging from storage/otp.log before a real production deployment.

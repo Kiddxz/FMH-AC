@@ -1,0 +1,10 @@
+SUPREMEDENT PATIENT & LANDING PAGE REVISION
+
+1. Landing About Us now follows supplied About us.txt, including mission, vision and full clinic address. Service Learn More has a redesigned layout and an accessible X button.
+2. Patient sidebar no longer shows Dental Condition Map; its interactive 3D and numbered 2D marking UI now lives at Dental Chart. Marked teeth display blue, can be toggled, and are submitted to the existing patient_tooth_reports table with concern_type=Marked. Old tooth_concerns.php redirects to dental_chart.php. Read-only dentist findings appear below self-reported markings.
+3. Dental Records and Treatment History have matching, consistently spaced list views with View and Delete buttons. IMPORTANT: Patient Delete only hides the entry from their own list; the clinic's original record stays intact. The table patient_hidden_records is created automatically if DB permissions allow, or import supremedent_patient_updates.sql.
+4. Profile actions refined; date-of-birth accepts 16+ (including 2009) and disallows future ages. Older patients remain eligible.
+5. Incomplete-profile patients can click calendar dates to see a Complete Profile dialog; booking remains disabled. Upcoming and history are side by side on wide displays; existing reschedule and cancellation controls are preserved.
+6. Patient/assistant/dentist shared search and header icons receive calmer colors, spacing and hover styles via supremedent_refined.css.
+
+IMPORTANT: Import original supremedent_db.sql ONLY for a new installation, otherwise it may overwrite existing data. On existing DBs, import just supremedent_patient_updates.sql if automatic table creation is not permitted. The updated site was PHP-syntax checked; live functional testing still requires your XAMPP, actual database, and browser.

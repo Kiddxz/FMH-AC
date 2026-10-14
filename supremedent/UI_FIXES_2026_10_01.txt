@@ -1,0 +1,29 @@
+SUPREMEDENT UI FIXES - 2026-10-01
+
+New file: assets/css/ui_fixes.css (loaded last on every page)
+Linked from: includes/ui.php (all portal pages), auth/login.php, auth/signup.php,
+auth/forgot_password.php, auth/reset_password.php, index.php
+
+TEXT BOXES
+- All inputs, selects, date/time fields and textareas in the portal now share one style:
+  44px height, 14px text, same border/radius, same focus ring, consistent placeholder color.
+- Selects use a custom chevron so they match inputs on every browser.
+- Textareas start at 110px tall and resize vertically.
+- Compact 36px boxes inside tables and inline row actions (reschedule, assign, status).
+- Disabled/readonly fields are clearly greyed; borderless search boxes keep their look.
+- Login/sign-up fields: 52px, same radius as buttons; login fields no longer look disabled
+  while the anti-autofill readonly flag is on.
+- Landing page inquiry form fields are now uniform 48px boxes with even spacing.
+- On phones, text boxes use 16px text so iOS does not zoom in on focus.
+
+SPACING / LAYOUT / CENTERING
+- Form action buttons now span the full row instead of squeezing next to the last field.
+- Sidebar is sticky and scrolls on its own; tighter, even menu spacing.
+- Content column is centered on wide screens (max ~1360px) with consistent padding.
+- Page headers align title and buttons vertically; buttons no longer wrap to two lines.
+- Card headings have proper title/subtitle spacing; cards inside grids use grid gaps.
+- Fixed overflow: patient booking calendar, restoration form + 3D model,
+  3D chart/condition map columns now stack instead of spilling out of their cards.
+- Empty table rows are centered; table headers don't wrap.
+- Auth pages: form vertically centered in its panel, DM Sans font, icon/text gap in buttons.
+- Global img height:120px bug neutralized in content areas (images keep aspect ratio).

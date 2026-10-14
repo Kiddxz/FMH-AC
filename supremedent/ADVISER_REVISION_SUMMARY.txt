@@ -1,0 +1,47 @@
+SUPREMEDENT ADVISER REVISION SUMMARY
+
+Completed in this build:
+1. Complete Profile Before Booking
+   - Required: phone, address, birthday, gender.
+   - Booking is blocked server-side if profile is incomplete.
+   - Patient dashboard shows a persistent completion alert.
+
+2. Appointment Calendar / Double Booking Prevention
+   - Color-coded monthly calendar.
+   - Available time-slot buttons.
+   - Fully booked slots disabled.
+   - Capacity is based on active dentists.
+   - Default booking cutoff is 3 hours before the preferred time.
+   - Start/end times, slot duration, and cutoff are Super Admin settings.
+
+3. Appointment History Cleanup
+   - Upcoming appointments are separate from history.
+   - Reschedule/Cancel actions only appear for active upcoming appointments.
+
+4. Walk-in Workflow
+   - Assistant can record a registered walk-in patient and assign a dentist.
+   - Conflicting dentist schedules are rejected.
+
+5. Patient Dental Chart / 3D
+   - Added patient read-only Dental Chart page.
+   - Uses the existing model.glb.
+   - Dentist keeps clinical editing responsibility.
+
+6. Landing Page / Contact / Footer
+   - Contact Us is now a real inquiry form and does not require login.
+   - Clinic address, phone, email, and hours are displayed dynamically.
+   - Super Admin can review public inquiries.
+   - Landing-page information cards contain more useful details.
+
+7. Laboratory Scope
+   - Laboratory is disabled/hidden by default.
+   - Existing code and database data are preserved.
+   - Super Admin can re-enable it if the final approved scope includes Laboratory.
+
+8. Validation
+   - Existing email validation retained.
+   - Patient profile now validates phone, email, birthday, and required fields.
+
+Still requiring external setup / confirmation:
+- Gmail/email OTP: configured through the protected local Gmail SMTP configuration.
+- Enter the real SupremeDent address, contact number, email, and hours in Super Admin > Website Content.

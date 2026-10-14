@@ -1,0 +1,43 @@
+SUPREMEDENT - OTP + ACCESS SECURITY UPDATE (2026-10-01)
+======================================================
+
+GMAIL OTP
+---------
+- config/mail.php uses Gmail SMTP for OTP delivery.
+- config/mail.local.php is configured for the supplied Gmail account using a Google App Password.
+- The normal Gmail password is not used by the project.
+- Signup OTP and Forgot Password OTP both use the same OTP helper.
+- OTP codes expire after 10 minutes and can only be used once.
+- OTP requests are rate-limited.
+- Raw OTP logging is disabled by default. Enable log_otp only for local debugging.
+- config/mail.local.php is ignored by Git and config/ is blocked from direct web access.
+
+ROLE / URL SECURITY
+-------------------
+- Every PHP page inside patient/, assistant/, dentist/, and superadmin/ now runs a server-side role guard.
+- The guard re-checks the user's ACTIVE status and role directly from MySQL on every protected request.
+- Manually editing a URL (for example patient/dashboard.php -> superadmin/dashboard.php) does not grant access.
+- Unauthorized cross-role requests return HTTP 403 Access Denied.
+- Sessions use strict cookie mode, HttpOnly cookies, SameSite=Lax, periodic session-ID regeneration, and a 30-minute idle timeout.
+- Protected pages send no-cache headers.
+- Common browser security headers are enabled.
+
+FILE / APACHE SECURITY
+----------------------
+- Directory listing is disabled.
+- .sql, .log, .ini, .env, .bak, .old and backup/original PHP copies are blocked from direct HTTP access.
+- includes/, config/, and storage/ are blocked from direct browser access.
+- Known demo-password reset/seed code was removed from config/schema.php and SQL upgrade blocks, so normal page loads or upgrades no longer reset a Super Admin password to a shared demo password.
+
+TEST CHECKLIST
+--------------
+1. Restart Apache and MySQL in XAMPP.
+2. Sign up with a test email and click Send OTP. Check the Gmail inbox/spam.
+3. Test Forgot Password > Send OTP.
+4. Log in as Patient, then manually change the URL to /supremedent/superadmin/dashboard.php. It should show Access denied (403).
+5. Log in as Assistant and try a Dentist/Super Admin URL. It should also be blocked.
+6. Log in as Super Admin and open Email / OTP Test to send a test OTP.
+
+NOTE
+----
+For a hosted deployment, keep raw OTP logging disabled, use HTTPS, and store the Gmail App Password as an environment secret. See GMAIL_OTP_SETUP.txt for the latest OTP changes and validation limits.

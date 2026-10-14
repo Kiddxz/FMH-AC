@@ -1,0 +1,69 @@
+SUPREMEDENT — CLIENT REVISIONS (2026-10-02)
+Based on "Website (1).docx". No database changes are required; supremedent_db.sql is unchanged.
+
+LANDING PAGE (index.php)
+- Less vertical spacing in Home, About, Services and Contact; hero text and image centred.
+- About intro and Services heading/intro centred; Services intro on one line on desktop.
+
+LOG IN / SIGN UP (auth/)
+- Stacked, centred card: welcome band on top, form below; fitted text boxes; no scrolling needed.
+- Password eye fixed: open eye = password visible, slashed eye = hidden (login + sign up).
+- Sign up checks every field while typing (names, email format, email already registered,
+  OTP format, password rules, password match, terms) instead of only after submitting.
+- Password strength bar: red = weak, yellow = fair, green = strong.
+- New: auth/check_email.php (live "email already registered" check).
+
+TEMPORARY SMS OTP -> storage/otp.log
+- config/sms.local.php: 'log_only' => true writes phone-verification OTPs to storage/otp.log
+  (open it in VS Code) instead of sending SMS. Set it to false to use Infobip again.
+
+ALL PORTALS (includes/ui.php)
+- Logout moved to the bottom of the sidebar; profile dropdown arrow removed.
+- Floating message button on every page (bottom-right). It opens the Message Center:
+  conversation history on the left ("No conversations" when empty), New Message with < > arrows
+  to switch between recipient types (Assistant / Dentist for patients), replies inside the thread.
+  The top-bar message icon was removed. New: api/messages.php, assets/js/message_widget.js.
+
+PATIENT PORTAL
+- Top bar: search, message and calendar icons removed (notifications + profile remain).
+- Sidebar: Notifications and Profile removed (still reachable from the top bar).
+- Dashboard: Recent activity (built from real account, appointment, record, chart and message
+  events) with Upcoming / Records / Plans cards stacked on the right; "My Dental Care" replaced by
+  a calendar of the patient's appointments; Unread Notifications card removed.
+- Appointments: list view (Date & Time, Service, Reason, Status, Actions) + "New Appointment".
+  Incomplete profile -> "Please complete your profile" pop-up. Complete profile -> schedule pop-up
+  -> confirmation pop-up -> list. Status: Pending / Approved / Declined. Reschedule only while
+  Pending; approved appointments are locked (also enforced on the server). CSRF check added.
+- Dental Chart: tighter layout, 3D model centred and fitted, drag no longer marks teeth by
+  accident, Reset view; "Dentist's Clinical Chart" card removed.
+- Dental Records / Treatment History / Treatment Plans: compact stats and simple lists
+  (Date, Service, Recorded, Action).
+- Profile: age is calculated as soon as a birthday is picked; fitted text boxes.
+
+ASSISTANT PORTAL
+- Dashboard: hero, 4 cards, Recent activity + Today's schedule.
+- Appointments: requests table with "Appointment View" button -> full calendar; clicking a date
+  shows a pop-up with the patients scheduled (count + Date & Time, Service, Reason, Status, View).
+  View -> Patient Details: name, service, reason, and the teeth the patient marked (2D + 3D).
+  Walk-in and staff availability forms moved into collapsible panels under the table.
+- Calendar removed from the sidebar (calendar.php now redirects to Appointment View).
+- Patients: "+ Register Patient" button and View column removed.
+- Create Chart: lower half laid out like the paper Dental Examination Record.
+- Register Patient: fitted text boxes; CSRF check added.
+
+DENTIST PORTAL
+- Dashboard: same layout as the assistant (hero, 4 cards, activity, today's schedule).
+- Appointments: full-width calendar with patients inside each date; pop-up with details; View ->
+  Patient Details with odontogram. "Mark Unavailable" kept in a collapsible panel.
+- "Create Chart" renamed "Dental Charts" (dentist/dental_charts.php): patient list with
+  Edit / View / Delete; clicking a patient shows all of their charts.
+- Edit Chart: paper-style examination record. View: printable paper record with Cancel / Print.
+- Treatment Plans (fixed restoration): Chart for Staining drawn like the lab form
+  (crowns, shade, occlusal staining, translucency, metal design and pontic design pickers).
+- Patient History: patient search bar with suggestions and a "Search" button.
+
+SHARED FILES ADDED
+assets/css/revisions_2026_10.css, assets/js/tooth_viewer.js, includes/appointment_calendar.php,
+includes/appointment_detail.php, includes/chart_editor_body.php, includes/exam_record.php,
+includes/patient_record_list.php, includes/staining_chart.php,
+assistant/appointment_view.php, dentist/appointment_view.php

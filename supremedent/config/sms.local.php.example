@@ -1,0 +1,11 @@
+<?php
+return [
+    'provider' => 'iprog', // iprog (default) or infobip
+    'iprog_api_token' => 'PASTE_YOUR_IPROG_API_TOKEN_HERE',
+    'log_only' => false, // true = write phone OTPs to storage/otp.log instead of sending SMS (testing only)
+
+    // Infobip (only used when provider = infobip)
+    'api_key' => 'PASTE_YOUR_INFOBIP_API_KEY_HERE',
+    'base_url' => 'https://api.infobip.com', // or https://xxxxx.api.infobip.com
+    'sender' => 'ServiceSMS',
+];

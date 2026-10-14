@@ -1,0 +1,8 @@
+<?php
+return [
+    'gmail_user' => 'supremedentc@gmail.com',
+    'gmail_app_password' => 'YOUR_NEW_16_CHARACTER_APP_PASSWORD',
+    'smtp_port' => 'auto',
+    'log_otp' => false,
+    // 'ca_file' => 'C:/xampp/php/extras/ssl/cacert.pem',
+];

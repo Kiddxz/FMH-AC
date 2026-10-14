@@ -1,0 +1,4 @@
+SupremeDent Gmail OTP update
+
+Read GMAIL_OTP_SETUP.txt for installation, signup/password recovery testing, and connection diagnostics.
+Keep the configured ZIP private: it contains config/mail.local.php with an App Password.

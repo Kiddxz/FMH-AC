@@ -1,0 +1,6 @@
+<?php
+require_once __DIR__ . '/../config/security.php';
+start_secure_session();
+require_once __DIR__ . '/../config/database.php';
+require_portal_role($conn, 'superadmin', false);
+ start_secure_session();require_once '../config/database.php';if(($_SESSION['role']??'')!=='superadmin'){header('Location: ../auth/login.php');exit;}$rows=$conn->query("SELECT a.*,CONCAT(COALESCE(u.first_name,''),' ',COALESCE(u.last_name,'')) user_name FROM activity_logs a LEFT JOIN users u ON u.id=a.user_id ORDER BY a.created_at DESC LIMIT 300");require '../includes/ui.php';ui_header('Activity Logs','superadmin');ui_sidebar('superadmin','activity_logs.php');?><div class="page-head"><div><div class="eyebrow">MONITORING</div><h1>Activity Logs</h1><div class="muted">Recent important actions performed in the system.</div></div></div><section class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>User</th><th>Action</th><th>Module</th><th>Details</th><th>IP</th></tr></thead><tbody><?php while($r=$rows->fetch_assoc()):?><tr><td><?=e(date('M d, Y h:i A',strtotime($r['created_at'])))?></td><td><?=e(trim($r['user_name'])?:'System')?></td><td><?=e($r['action'])?></td><td><?=e($r['module'])?></td><td><?=e($r['details'])?></td><td><?=e($r['ip_address'])?></td></tr><?php endwhile;?></tbody></table></div></section><?php ui_footer();?>

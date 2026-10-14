@@ -1,0 +1,83 @@
+SUPREMEDENT — GMAIL OTP FIX — 2026-10-01
+
+INSTALL INTO YOUR EXISTING XAMPP PROJECT
+1. Back up C:\xampp\htdocs\supremedent and your database first.
+2. Extract the ZIP. Copy the contents of its supremedent folder into
+   C:\xampp\htdocs\supremedent and overwrite the updated files.
+   Keep your existing uploads and database. No SQL re-import is required.
+3. Restart Apache and MySQL. Refresh the signup page with Ctrl+F5.
+
+EMAIL CONFIGURATION
+config/mail.local.php contains the supplied Gmail sender and Google App Password.
+The ordinary Gmail account password is not used.
+This is a private configured package. Do not post this ZIP publicly.
+Replace the exposed App Password with a newly generated one in mail.local.php.
+Do not send the replacement password in chat. Spaces are removed automatically.
+Environment variables SUPREMEDENT_GMAIL_USER and SUPREMEDENT_GMAIL_APP_PASSWORD
+can override local configuration if set on your computer.
+
+TEST THE ACTUAL CONNECTION
+Sign in as your existing Super Admin, then open Email / OTP Test:
+http://localhost/supremedent/superadmin/mail_test.php
+Enter an inbox you can access and click Send Test OTP.
+The result is shown on the page. Errors include an admin-only SMTP diagnostic.
+The test code cannot create an account or reset a password.
+
+SIGNUP
+http://localhost/supremedent/auth/signup.php
+Enter a valid first and last name (at least two characters each), and your email.
+Click Send OTP. Check that email's inbox and Spam folder. Enter the 6-digit code,
+complete the password fields and agreement, then sign up.
+The code is usable only after Gmail accepts the email, expires in 10 minutes,
+and can be consumed only once. A successful resend replaces the older code.
+
+FORGOT PASSWORD
+http://localhost/supremedent/auth/login.php
+Click Forgot password? Enter the email of an existing active account.
+Click Send OTP, enter the code, click Verify & Continue, and choose a new password.
+Normal sign-in remains password-only. auth/signin.php also opens the login page.
+For unknown/inactive reset accounts, the response stays generic to avoid
+revealing account existence; no email is sent for those accounts.
+
+IF A SEND FAILS
+The old code falsely returned success even when SMTP failed. This is corrected.
+Wait at least 60 seconds before retrying. At most 8 requests per hour per email/IP
+are allowed. Failed attempts also count so credentials cannot be brute-forced.
+Detailed technical errors are written to C:\xampp\apache\logs\error.log.
+
+mail_config: use a real 16-character Google App Password, not a placeholder or
+ordinary Gmail password. The protected admin page shows whether one is loaded.
+gmail_auth / SMTP 535: Google rejected the App Password. Generate a fresh one for
+supremedentc@gmail.com, update mail.local.php, and restart Apache.
+smtp_connection: check internet, firewall and outbound Gmail ports 465/587.
+The mailer tries SSL on 465, then STARTTLS on 587 for connection/TLS failures.
+It does not repeat a send after authentication or message submission.
+openssl_missing: enable extension=openssl in C:\xampp\php\php.ini and restart Apache.
+TLS/certificate error: a Mozilla CA bundle is included in config/cacert.pem
+and is used by default. If your installation reports a certificate error,
+check your computer date/time and update that trusted bundle, or set ca_file
+in mail.local.php to a valid current certificate bundle path.
+For example: C:/xampp/php/extras/ssl/cacert.pem (only if the file exists).
+Keep certificate verification enabled.
+HTTP 503: check MySQL, the supremedent_db database and Apache's error log.
+Session expired: refresh the form before sending again.
+
+LOGGING
+Raw OTP logging is disabled by default. For local debugging only, set
+'log_otp' => true in config/mail.local.php. Then codes also appear in
+storage/otp.log and Apache error.log. Turn it off again after debugging.
+No App Password is printed by the mailer or admin test page.
+
+VALIDATION PERFORMED HERE
+Automated JavaScript checks passed for signup/reset request fields, successful
+responses, resend cooldown, SMTP failure feedback, invalid JSON, network failures,
+timeouts, expired-session responses and changing the email during a request.
+Inline authentication JavaScript syntax was checked.
+PHP and database paths were reviewed. This execution environment has no PHP or
+MySQL runtime and cannot reach Gmail SMTP. PHP execution, database integration
+and real Gmail delivery have NOT been verified here; run the protected test on
+XAMPP before relying on delivery.
+
+Official references:
+https://support.google.com/accounts/answer/185833
+https://support.google.com/mail/answer/7104828

@@ -1,0 +1,499 @@
+/* ==========================================================================
+   SupremeDent UI fixes (2026-10-01)
+   Loaded LAST on portal, auth and landing pages. Normalises spacing,
+   centring, responsive layout and every text box (input/select/textarea).
+   ========================================================================== */
+
+:root {
+  --ui-field-h: 44px;
+  --ui-field-h-sm: 36px;
+  --ui-radius: 10px;
+  --ui-gap: 18px;
+  --ui-border: #d6e3e3;
+  --ui-border-hover: #b5cfcd;
+  --ui-focus: #0d6971;
+  --ui-focus-ring: 0 0 0 3px rgba(13, 105, 113, .15);
+  --ui-placeholder: #8a9c9e;
+  --ui-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23537174' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+}
+
+/* styles.css forces every <img> to width:100%;height:120px. Keep aspect ratio
+   for images that have no explicit sizing rule of their own. */
+:where(.app-main, .auth-page, .landing-page) img { height: auto; max-width: 100%; }
+
+/* ---------------------------------------------------------------------------
+   1. PORTAL SHELL — topbar, sidebar, centred content column
+   --------------------------------------------------------------------------- */
+.app-page .app-topbar { gap: 20px; }
+.app-page .app-brand { flex: 0 0 auto; }
+.app-page .topbar-tools { gap: 6px; }
+.app-page .topbar-search { margin-right: 6px; }
+.app-page .topbar-profile .profile-chevron { margin-left: -16px; }
+
+.app-page .app-shell { align-items: flex-start; }
+
+.app-page .app-sidebar {
+  position: sticky;
+  top: 76px;
+  height: calc(100vh - 76px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 14px 18px;
+}
+.app-page .app-sidebar .sidebar-caption { padding: 0 12px 14px; }
+.app-page .app-sidebar nav { display: grid; gap: 4px; }
+.sd-refined .app-sidebar nav a,
+.app-page .app-sidebar nav a { margin: 0; padding: 10px 12px; line-height: 1.3; }
+.app-page .sidebar-support { margin: auto 0 0; }
+
+/* Content column: comfortable padding, centred on very wide screens. */
+.app-page .app-main {
+  padding-top: clamp(22px, 2.6vw, 36px);
+  padding-bottom: 48px;
+  padding-left: max(clamp(18px, 2.6vw, 36px), calc((100% - 260px - 1360px) / 2));
+  padding-right: max(clamp(18px, 2.6vw, 36px), calc((100% - 260px - 1360px) / 2));
+  min-height: calc(100vh - 76px);
+}
+
+/* Page heading row */
+.app-page .page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  margin-bottom: 24px;
+}
+.app-page .page-head > div:first-child { flex: 1 1 320px; min-width: 0; }
+.app-page .page-head h1 { margin: 8px 0 6px; line-height: 1.15; }
+.app-page .page-head .muted { max-width: 760px; }
+.app-page .page-head > .btn,
+.app-page .page-head > .badge,
+.app-page .page-head > .actions,
+.app-page .page-head > a,
+.app-page .page-head > .directory-count { flex: 0 0 auto; margin: 0; }
+.app-page .page-head > .badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; }
+.app-page .eyebrow { display: inline-block; }
+
+/* Flash / alerts */
+.app-page .flash { margin: 0 0 20px; padding: 13px 16px; border-radius: 12px; line-height: 1.45; }
+
+/* ---------------------------------------------------------------------------
+   2. CARDS, GRIDS & VERTICAL RHYTHM
+   --------------------------------------------------------------------------- */
+.app-page .card { margin: 0 0 var(--ui-gap); min-width: 0; }
+.app-page .card > :last-child { margin-bottom: 0; }
+
+/* Cards that live inside a grid use the grid gap, not their own margin. */
+.app-page :is(.grid, .grid-2, .grid-3, .grid-4, .profile-settings-grid, .message-layout,
+  .restoration-form-grid, .appointment-columns, .calendar-lower, .chart-exam-grid,
+  .chart-model-layout, .patient-condition-layout, .concern-layout, .care-grid, .plan-chooser) > .card { margin: 0; }
+.app-page .app-main > :is(.grid, .profile-settings-grid, .message-layout, .restoration-form-grid,
+  .appointment-columns, .calendar-lower, .chart-exam-grid, .metric-grid, .plan-chooser,
+  .patient-condition-layout, .concern-layout) { margin-bottom: var(--ui-gap); }
+.app-page .message-layout > div { display: grid; gap: var(--ui-gap); align-content: start; min-width: 0; }
+.app-page .message-layout > div > .card { margin: 0; }
+
+.app-page .card-heading,
+.app-page .form-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 20px;
+}
+.app-page .card-heading > div,
+.app-page .form-title > div { min-width: 0; flex: 1 1 240px; }
+.app-page .card-heading h2,
+.app-page .form-title h2 { margin: 0; line-height: 1.25; }
+.app-page .card-heading p,
+.app-page .form-title p { margin: 5px 0 0; line-height: 1.5; }
+.app-page .card-heading .badge { margin-left: 0; flex: 0 0 auto; }
+.app-page .card > h2:first-child { margin-bottom: 16px; }
+.app-page .card h3 { line-height: 1.3; }
+
+/* The global reset strips paragraph/list spacing; restore it in content. */
+.app-page .app-main p + p { margin-top: 10px; }
+.app-page .app-main :is(ul, ol):not([class]) { margin: 8px 0; padding-left: 1.3em; line-height: 1.6; }
+
+/* ---------------------------------------------------------------------------
+   3. FORMS & TEXT BOXES (portal)
+   --------------------------------------------------------------------------- */
+.app-page .form-grid { gap: 16px 18px; align-items: start; }
+.app-page .form-grid > :is(.actions, .full, .form-section-title, h2, h3, hr, p) { grid-column: 1 / -1; }
+.app-page form .actions,
+.app-page .form-grid > .actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.app-page .card > form:not(.form-grid) > .actions { margin-top: 20px; }
+
+.app-page .field { display: grid; gap: 7px; min-width: 0; align-content: start; }
+.app-page .field label,
+.app-page .form-label {
+  margin: 0;
+  color: #24484c;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.app-page .field small,
+.app-page .field .muted { font-size: 12px; line-height: 1.45; }
+
+/* One consistent text box everywhere inside the content area.
+   :where() keeps specificity at (0,2,0) so the size variants below can win. */
+body.app-page .app-main :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]),
+  select,
+  textarea
+) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: var(--ui-field-h);
+  padding: 10px 13px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background-color: #fff;
+  color: var(--text, #18353a);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  outline: none;
+  box-shadow: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.app-page .app-main .field :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+.app-page .app-main .form-grid :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { width: 100%; }
+
+.app-page .app-main :is(input, textarea)::placeholder { color: var(--ui-placeholder); opacity: 1; }
+
+body.app-page .app-main :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea):hover:not(:disabled):not(:focus) {
+  border-color: var(--ui-border-hover);
+}
+body.app-page .app-main :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus,
+body.app-page .app-main :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus-visible {
+  border-color: var(--ui-focus);
+  box-shadow: var(--ui-focus-ring);
+  outline: none;
+}
+.app-page .app-main :is(input, select, textarea):disabled,
+.app-page .app-main :is(input, textarea)[readonly] {
+  background-color: #f3f7f7;
+  color: #6d8285;
+  cursor: not-allowed;
+}
+.app-page .app-main :is(input, textarea)[readonly] { cursor: default; }
+
+.app-page .app-main textarea { min-height: 110px; padding-top: 11px; resize: vertical; }
+
+/* Selects: same height as inputs, custom chevron, no OS-specific look. */
+.app-page .app-main select:not([multiple]):not([size]) {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 38px;
+  background-image: var(--ui-chevron);
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+.app-page .app-main select[multiple] { min-height: 120px; padding: 8px; }
+
+/* Date / time inputs line up with the rest. */
+.app-page .app-main :is(input[type="date"], input[type="time"], input[type="datetime-local"], input[type="month"]) {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: var(--ui-field-h);
+}
+.app-page .app-main input::-webkit-calendar-picker-indicator { opacity: .6; cursor: pointer; }
+.app-page .app-main input[type="number"] { -moz-appearance: textfield; }
+
+/* Checkboxes & radios */
+.app-page .app-main :is(input[type="checkbox"], input[type="radio"]) {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: var(--ui-focus);
+  cursor: pointer;
+}
+.app-page .app-main :is(.option-check, .check-line, .checkbox-field label, .setting-toggle) { align-items: center; gap: 9px; }
+
+/* Compact text boxes inside tables / inline row actions. */
+.app-page .app-main :is(.table, .inline-form, .inquiry-action, .reschedule-form, .sd-team-actions, .chart-actions, .day-actions, .staff-edit-grid)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select) {
+  min-height: var(--ui-field-h-sm);
+  height: auto;
+  padding: 7px 11px;
+  font-size: 13px;
+}
+.app-page .app-main :is(.table, .inline-form, .inquiry-action, .reschedule-form) select:not([multiple]) { padding-right: 32px; background-position: right 11px center; }
+.app-page .app-main :is(.table, .inline-form, .inquiry-action, .reschedule-form) :is(input[type="date"], input[type="time"]) { height: var(--ui-field-h-sm); padding-top: 0; padding-bottom: 0; }
+.app-page .app-main .table textarea,
+.app-page .app-main .staff-edit-grid textarea { min-height: 70px; font-size: 13px; padding: 8px 11px; }
+
+/* Inputs that sit inside a styled wrapper keep the wrapper's look. */
+.app-page .app-main :is(.sd-team-search, .topbar-search) input {
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.app-page .app-main .sd-team-search:focus-within { border-color: var(--ui-focus); box-shadow: var(--ui-focus-ring); }
+
+/* Search bars */
+.app-page .searchbar,
+.app-page .directory-search { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.app-page .searchbar input,
+.app-page .directory-search input { flex: 1 1 auto; min-width: 0; }
+.app-page .searchbar .btn,
+.app-page .directory-search .btn { flex: 0 0 auto; min-height: var(--ui-field-h); }
+.app-page .calendar-toolbar input { min-height: var(--ui-field-h); }
+
+/* ---------------------------------------------------------------------------
+   4. BUTTONS
+   --------------------------------------------------------------------------- */
+.app-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 16px;
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+}
+.app-page .btn:disabled,
+.app-page .btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+.app-page .actions .btn,
+.app-page .form-grid > .actions .btn { min-width: 120px; }
+.app-page .table .btn { min-height: 32px; min-width: 0; padding: 7px 11px; font-size: 12px; margin: 2px 2px 2px 0; }
+.app-page details > summary.btn { list-style: none; }
+.app-page details > summary.btn::-webkit-details-marker { display: none; }
+
+/* ---------------------------------------------------------------------------
+   5. TABLES
+   --------------------------------------------------------------------------- */
+.app-page .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.app-page .table th { white-space: nowrap; vertical-align: middle; }
+.app-page .table td { vertical-align: middle; line-height: 1.45; }
+.app-page .table td.empty,
+.app-page .table .empty { text-align: center; color: var(--muted); padding: 34px 16px; }
+.app-page .table td .badge { white-space: nowrap; }
+.app-page .table td > form { display: inline-block; margin: 0; vertical-align: middle; }
+.app-page .empty { text-align: center; }
+
+/* ---------------------------------------------------------------------------
+   6. PAGE-SPECIFIC LAYOUT OVERFLOW FIXES
+   (higher specificity so it also beats inline <style> blocks in pages)
+   --------------------------------------------------------------------------- */
+/* Patient booking: calendar + slot panel overflowed the card on laptops. */
+.app-page .app-main .booking-layout { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: 28px; align-items: start; }
+.app-page .app-main .booking-calendar,
+.app-page .app-main .slot-panel { min-width: 0; }
+.app-page .app-main .slot-panel .btn { width: 100%; }
+.app-page .app-main .booking-lock .btn { white-space: nowrap; }
+.app-page .app-main .reschedule-form { min-width: 260px; }
+
+/* Restoration form + 3D model column overflowed on laptops. */
+.app-page .restoration-form-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); }
+.app-page .restoration-teeth { grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 5px; }
+.app-page .restoration-tooth { min-width: 0; padding: 0; }
+
+/* 3D chart / condition map columns */
+.app-page .chart-model-layout,
+.app-page .patient-condition-layout { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr) !important; gap: 18px; }
+.app-page .calendar-lower { grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); }
+.app-page .concern-layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+.app-page .message-layout { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: var(--ui-gap); }
+.app-page .profile-settings-grid { grid-template-columns: minmax(240px, 300px) minmax(0, 1fr); align-items: start; }
+.app-page .profile-summary { padding: 30px 24px; }
+.app-page .profile-summary h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
+.app-page .profile-summary small { overflow-wrap: anywhere; }
+
+.app-page .chart-patient-card { grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); align-items: end; }
+.app-page .tooth-arch { grid-template-columns: repeat(16, minmax(0, 1fr)); }
+
+/* Modal dialogs: centred on every screen size */
+.app-page .profile-booking-modal.is-open,
+.service-modal.is-open { display: flex; align-items: center; justify-content: center; }
+
+/* ---------------------------------------------------------------------------
+   7. AUTH PAGES (login / sign-up / forgot / reset)
+   --------------------------------------------------------------------------- */
+.auth-page,
+.auth-page :is(input, button, select, textarea) { font-family: 'DM Sans', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; }
+
+.auth-page .auth-form-panel { display: flex !important; flex-direction: column; justify-content: center; padding: 36px 44px !important; }
+.auth-page .auth-back { align-self: flex-start; margin-bottom: 8px; }
+.auth-page .auth-form-wrap { margin-top: auto !important; margin-bottom: auto !important; padding: 12px 0; }
+.auth-page .auth-wordmark { line-height: 1.2; }
+.auth-page .auth-kicker { margin: 6px 0 22px; }
+.auth-page .auth-message { margin: 0 0 16px; padding: 11px 14px; border-radius: 12px; line-height: 1.45; }
+.auth-page .auth-message i { margin-right: 6px; }
+
+.auth-page .auth-field { margin-bottom: 16px; }
+.auth-page .auth-field label { margin-bottom: 7px; line-height: 1.35; }
+.auth-page .auth-grid { gap: 0 14px; }
+.auth-page .auth-grid .auth-field { margin-bottom: 16px; min-width: 0; }
+
+.auth-page .input-field,
+.auth-page select.input-field {
+  box-sizing: border-box;
+  width: 100%;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 0 18px;
+  border: 1.5px solid #dce5ee;
+  border-radius: 14px !important;
+  background: #fff;
+  color: #20313f;
+  font-size: 15px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.auth-page .input-field:hover:not(:focus) { border-color: #c4d3e0; }
+.auth-page .input-field:focus,
+.auth-page .input-field:focus-visible { border-color: #3f8fca; box-shadow: 0 0 0 3px rgba(63, 143, 202, .16); outline: none; }
+/* Login fields start readonly to block autofill — don't let that look disabled. */
+.auth-page .input-field[readonly] { background: #fff; color: #20313f; }
+.auth-page .input-field::placeholder { color: #9aa8b7; }
+
+.auth-page .password-control { position: relative; }
+.auth-page .password-control .input-field { padding-right: 52px; }
+.auth-page .password-toggle { display: grid; place-items: center; right: 9px; }
+
+.auth-page .otp-inline { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.auth-page .otp-send { height: 52px; border-radius: 14px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; }
+
+.auth-page .field-feedback:empty,
+.auth-page .otp-help:empty { min-height: 0; margin-top: 0; }
+.auth-page .validation-list { margin-top: 10px; }
+.auth-page .password-meter { margin-top: 10px; }
+
+.auth-page .options-row { margin: 2px 0 22px; }
+.auth-page .terms-check { align-items: flex-start; margin: 4px 0 20px; }
+.auth-page .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 52px !important;
+  border-radius: 14px !important;
+}
+.auth-page .auth-footer { margin-top: 22px; line-height: 1.5; }
+
+@media (max-width: 820px) {
+  .auth-page { padding: 20px 16px !important; }
+  .auth-page .auth-form-panel { padding: 26px 22px 30px !important; }
+}
+@media (max-width: 420px) {
+  .auth-page .otp-inline { grid-template-columns: 1fr; }
+  .auth-page .auth-grid.two-up { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   8. LANDING PAGE — inquiry form text boxes
+   --------------------------------------------------------------------------- */
+.landing-page .contact-form { padding: 26px; }
+.landing-page .contact-form h3 { margin: 0 0 16px; }
+.landing-page .contact-form > div { gap: 12px; margin-bottom: 12px; }
+.landing-page .contact-form :is(input, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1.5px solid #dfe8ee;
+  border-radius: 12px;
+  background: #fff;
+  color: #1d2a39;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.landing-page .contact-form textarea { display: block; min-height: 130px; margin-bottom: 16px; resize: vertical; }
+.landing-page .contact-form :is(input, textarea):focus { border-color: #3f8fca; box-shadow: 0 0 0 3px rgba(63, 143, 202, .16); outline: none; }
+.landing-page .contact-form :is(input, textarea)::placeholder { color: #95a3b2; }
+.landing-page .contact-form .landing-primary { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; }
+.landing-page .landing-form-message { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; }
+.landing-page .landing-form-message:empty { display: none; }
+
+/* ---------------------------------------------------------------------------
+   9. RESPONSIVE
+   --------------------------------------------------------------------------- */
+@media (max-width: 1280px) {
+  .app-page .restoration-form-grid,
+  .app-page .chart-model-layout,
+  .app-page .patient-condition-layout { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 1180px) {
+  .app-page .app-main .booking-layout { grid-template-columns: 1fr; }
+  .app-page .message-layout,
+  .app-page .calendar-lower,
+  .app-page .concern-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 1024px) {
+  .app-page .app-sidebar { width: 220px; }
+  .app-page .app-main {
+    padding-left: clamp(16px, 2.6vw, 28px);
+    padding-right: clamp(16px, 2.6vw, 28px);
+  }
+  .app-page .profile-settings-grid { grid-template-columns: 1fr; }
+  .app-page .restoration-teeth { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .app-page .tooth-arch { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .app-page .app-shell { display: block; }
+  .app-page .app-sidebar {
+    position: sticky;
+    top: 67px;
+    z-index: 15;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 8px 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .app-page .app-sidebar .sidebar-caption,
+  .app-page .app-sidebar .sidebar-home,
+  .app-page .sidebar-support { display: none; }
+  .app-page .app-sidebar nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .app-page .app-sidebar nav::-webkit-scrollbar { display: none; }
+  .app-page .app-sidebar nav a { flex: 0 0 auto; padding: 8px 12px; font-size: 12px; transform: none; }
+  .app-page .app-main { min-height: 0; padding: 20px 16px 36px; }
+  .app-page .page-head { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }
+  .app-page .page-head > div:first-child { flex-basis: auto; width: 100%; }
+  .app-page .page-head .btn { margin-top: 0; }
+  .app-page .form-grid { grid-template-columns: 1fr; }
+  .app-page .form-grid > .actions .btn,
+  .app-page .card > form > .actions .btn { flex: 1 1 140px; }
+  .app-page .searchbar,
+  .app-page .directory-search { flex-direction: column; align-items: stretch; }
+  .app-page .btn { white-space: normal; }
+  .app-page .app-main :is(input, select, textarea) { font-size: 16px; } /* stops iOS zoom-on-focus */
+  .app-page .app-main :is(.table, .inline-form, .inquiry-action, .reschedule-form) :is(input, select) { font-size: 14px; }
+  .app-page .restoration-teeth { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .app-page .chart-patient-card { grid-template-columns: 1fr; }
+  .landing-page .contact-form { padding: 18px; }
+  .landing-page .contact-form > div { grid-template-columns: 1fr; }
+}

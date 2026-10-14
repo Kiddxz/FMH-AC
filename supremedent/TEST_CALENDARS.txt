@@ -1,0 +1,19 @@
+How to test synchronized calendars in XAMPP
+
+1. Start Apache and MySQL, and keep your current supremedent_db database.
+2. Login as a patient, complete your profile, open patient/appointments.php.
+   Sunday boxes must be red / unclickable. Book a Monday–Saturday time.
+3. On assistant/calendar.php or assistant/appointments.php, see the request
+   labeled Pending. The calendar auto-refreshes every 30 seconds, on window
+   focus, or through the Refresh button.
+4. On dentist/appointments.php, the request should appear as Pending,
+   explicitly unassigned, not a confirmed patient appointment.
+5. Back in assistant/appointments.php, select a dentist and Approve.
+6. The assistant and assigned dentist calendars should now say Approved.
+   Other dentists no longer see this booking after it is assigned.
+7. Click an approved booking on the dentist calendar to view patient details.
+8. Verify assistant walk-ins and approvals cannot be scheduled on Sundays.
+
+All 3 calendars use the existing appointments database table. No new schema
+migration is needed. PHP lint and simulated calendar rendering were tested,
+but database-backed XAMPP integration must be tested on your own environment.

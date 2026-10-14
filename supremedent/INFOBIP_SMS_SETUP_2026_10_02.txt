@@ -1,0 +1,51 @@
+SUPREMEDENT - INFOBIP SMS OTP SETUP
+===================================
+
+The patient Contact Number verification flow now uses Infobip instead of Semaphore.
+The existing UI remains the same:
+
+Contact Number -> Verify -> OTP popup -> enter 6-digit code -> Verify OTP -> green check
+
+The OTP is generated and verified by SupremeDent. Infobip is used only to deliver the SMS.
+
+FREE TRIAL SETUP
+----------------
+1. Create/sign in to your Infobip free trial account.
+2. Verify the Philippine mobile number that you will use for testing.
+   Infobip trial accounts only send SMS to verified recipient numbers.
+3. In Infobip, open Developer Tools / API Keys and copy an API key that has SMS send permission.
+4. Open:
+      config/sms.local.php
+5. Replace:
+      PASTE_YOUR_INFOBIP_API_KEY_HERE
+   with the new Infobip API key.
+6. Keep these values for trial testing unless your Infobip account shows a different Base URL:
+      base_url = https://api.infobip.com
+      sender   = ServiceSMS
+7. Start Apache and MySQL in XAMPP.
+8. Log in as a patient -> Profile -> enter the SAME verified phone number -> Verify.
+9. The OTP popup opens immediately. Wait for the SMS and enter the 6-digit code.
+
+OPTIONAL PERSONALIZED BASE URL
+------------------------------
+Infobip may show a personalized URL such as:
+    https://xxxxx.api.infobip.com
+
+If so, you can put that value in config/sms.local.php as base_url.
+
+IMPORTANT
+---------
+- Do not put the API key in JavaScript, HTML, screenshots, or a public Git repository.
+- config/sms.local.php is gitignored.
+- The old Semaphore key was removed from this updated package.
+- If PHP says cURL is disabled, enable extension=curl in XAMPP php.ini and restart Apache.
+- Trial messages must go to a phone number verified in the Infobip account.
+- ServiceSMS is the Infobip trial sender shown in Infobip's official SMS tutorial.
+
+FILES CHANGED
+-------------
+config/sms.php
+config/sms.local.php
+config/sms.local.php.example
+patient/send_phone_otp.php
+INFOBIP_SMS_SETUP_2026_10_02.txt

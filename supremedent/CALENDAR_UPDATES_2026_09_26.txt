@@ -1,0 +1,18 @@
+SupremeDent calendar updates — 2026-09-26
+
+1. Patient, dentist, and assistant calendars display Sunday in red: clinic closed.
+2. New patient requests and reschedules are rejected on Sunday in PHP (not only visually).
+3. Assistant walk-ins and Sunday appointment approvals are blocked; historical Sunday records remain visible for corrections.
+4. Dentist appointments calendar now mirrors patient booking calendar: month arrows, week row, date tiles, and a selected-day side panel.
+5. Dentist calendar shows assigned APPROVED / COMPLETED appointments plus new unassigned PENDING requests. Unassigned pending requests are explicitly labeled; they are not confirmed or assigned.
+6. Assistant calendar shows PENDING, APPROVED, and COMPLETED patient bookings with patient, service, date/time and status. Assistant may view it on the Appointments page or its own Calendar page.
+7. Calendars read the same appointments table — submit a request, then refresh the staff pages to see it. Assistant approval assigns the dentist and switches the dentist event from Pending to Approved.
+8. Assistant top-bar calendar icon, sidebar link and dashboard shortcut open assistant/calendar.php.
+9. Existing dentist unavailability and approval actions remain on their respective pages.
+
+Deployment:
+- Back up your live supremedent folder and supremedent_db first.
+- Copy supremedent_backup/supremedent/ into C:\xampp\htdocs\supremedent_backup\supremedent\ (or your own install path).
+- Keep config/database.php pointing to your existing database; do not import the included old SQL dump over live data. No additional migration is needed for these calendar changes.
+- Open the three role-specific /appointments.php pages in XAMPP and test the new booking, pending and approval flow. Staff calendars refresh automatically every 30 seconds while open, on returning to the browser tab, or with the Refresh button.
+- Your Apache/PHP and MySQL instance must be running; ZIP creation and PHP lint alone cannot prove end-to-end local database behavior.

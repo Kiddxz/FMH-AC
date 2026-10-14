@@ -1,0 +1,15 @@
+SUPREMEDENT SMS OTP SETUP - UPDATED
+==================================
+
+This older Semaphore setup has been replaced by Infobip.
+
+Use this file instead:
+    INFOBIP_SMS_SETUP_2026_10_02.txt
+
+Current provider:
+    Infobip SMS API
+
+Current configuration file:
+    config/sms.local.php
+
+The old Semaphore API key is not included in this updated package.

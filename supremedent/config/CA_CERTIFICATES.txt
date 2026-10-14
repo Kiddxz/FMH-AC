@@ -1,0 +1,13 @@
+Bundled CA certificates for Gmail SMTP TLS verification.
+
+Source: the runtime operating system ca-certificates package, Mozilla root
+certificates under /usr/share/ca-certificates/mozilla; copied 2026-10-01.
+121 publicly trusted CA certificates. No local/private proxy roots included.
+Each certificate was parsed with OpenSSL before packaging.
+Mozilla trust-store information: https://wiki.mozilla.org/CA/Included_Certificates
+
+config/mail.php uses this bundle by default so XAMPP does not need a preconfigured
+openssl.cafile for this SMTP connection. Keep this trust bundle current.
+You can override ca_file in mail.local.php or SUPREMEDENT_SMTP_CA_FILE.
+An empty ca_file setting uses PHP/OpenSSL system defaults.
+TLS peer and hostname verification always remain enabled.
