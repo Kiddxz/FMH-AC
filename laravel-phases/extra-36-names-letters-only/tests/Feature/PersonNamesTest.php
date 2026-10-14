@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 /**
- * People's names cannot have numbers or symbols, on every form.
+ * People's names and pet names cannot have numbers or symbols, on every form.
  */
 class PersonNamesTest extends TestCase
 {
@@ -51,9 +51,9 @@ class PersonNamesTest extends TestCase
     {
         $this->post('/book', [
             'first_name' => 'R0sa', 'last_name' => 'Dizon3', 'contact_number' => '09181112222', 'email' => '',
-            'pet_name' => 'K9', 'species' => 'dog', 'gender' => 'male', 'age' => 1,   // a pet may have a number
+            'pet_name' => 'K9!', 'species' => 'dog', 'gender' => 'male', 'age' => 1,
             'service_ids' => [Service::where('name', 'Consultation')->value('id')], 'privacy' => '1',
-        ])->assertSessionHasErrors(['first_name', 'last_name'])->assertSessionDoesntHaveErrors('pet_name');
+        ])->assertSessionHasErrors(['first_name', 'last_name', 'pet_name']);
         $this->assertSame(0, Customer::where('contact_number', '09181112222')->count());
     }
 
@@ -66,6 +66,18 @@ class PersonNamesTest extends TestCase
         $this->assertSame('John', $john->fresh()->first_name);
 
         $this->actingAs($staff)->put('/staff/profile', ['firstname' => 'Ana', 'lastname' => 'Cruz99'])->assertSessionHasErrors('lastname');
+    }
+
+    public function test_pet_names_refuse_numbers_and_symbols(): void
+    {
+        $mark = User::where('email', 'owner@fmhanimalclinic.com')->first();
+        $this->actingAs($mark)->post('/portal/pets', [
+            'petname' => 'asdd123@', 'species' => 'dog', 'breed' => 'Aspin', 'sex' => 'male', 'age' => 1,
+        ])->assertSessionHasErrors('petname');
+        $this->actingAs($mark)->post('/portal/pets', [
+            'petname' => 'Choco Mae', 'species' => 'dog', 'breed' => 'Aspin', 'sex' => 'male', 'age' => 1,
+        ])->assertSessionDoesntHaveErrors('petname');
+        $this->actingAs($mark)->get('/portal/pets/create')->assertSee('Numbers and symbols are not allowed in names.');
     }
 
     public function test_pages_with_a_name_field_get_the_typing_check(): void

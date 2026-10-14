@@ -8,13 +8,12 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * People's names cannot have numbers (or symbols like @ # $), on EVERY form of the system:
- * register, profiles, customers, users, walk-in booking and the signer of a waiver.
+ * People's names and pet names cannot have numbers (or symbols like @ # $), on EVERY form of the system:
+ * register, profiles, customers, users, pets, walk-in booking and the signer of a waiver.
  * Allowed: letters (also ñ and accents), spaces, periods (Ma.), hyphens (Mary-Ann) and apostrophes (O'Neil).
  *
  *  - On the server: a sent form with a wrong name goes back with an error under the field.
  *  - In the browser: numbers and symbols are removed while typing, with a short note under the field.
- * Pet names are not included (a pet may be called "K9").
  */
 class PersonNamesOnly
 {
@@ -27,6 +26,8 @@ class PersonNamesOnly
         'middle_name' => 'middle name',
         'middlename' => 'middle name',
         'signer_name' => 'name of the signer',
+        'petname' => 'pet name',
+        'pet_name' => 'pet name',
     ];
 
     // Letters (any language), spaces, period, hyphen, apostrophe
@@ -69,7 +70,7 @@ class PersonNamesOnly
 <script>
   // Names: letters only. Numbers and symbols are removed while typing (the server checks again).
   (function () {
-    var fields = 'input[name=first_name],input[name=firstname],input[name=last_name],input[name=lastname],input[name=middle_name],input[name=middlename],input[name=signer_name]';
+    var fields = 'input[name=first_name],input[name=firstname],input[name=last_name],input[name=lastname],input[name=middle_name],input[name=middlename],input[name=signer_name],input[name=petname],input[name=pet_name]';
     var bad = /[^\p{L}\p{M}\s.'\-]/u;
     var badAll = /[^\p{L}\p{M}\s.'\-]/gu;
     document.querySelectorAll(fields).forEach(function (input) {
