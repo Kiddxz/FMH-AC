@@ -20,7 +20,7 @@
         </div>
         <div class="wk-trust">
           <span>{!! $check !!} Free to book</span>
-          <span>{!! $check !!} {{ $onlinePayment ? 'Pay at the clinic or online (GCash, Maya, Card)' : 'Pay at the clinic' }}</span>
+          <span>{!! $check !!} {{ $onlinePayment ? 'Pay at the clinic or online' : 'Pay at the clinic' }}</span>
           <span>{!! $check !!} No account or password needed</span>
         </div>
       </div>

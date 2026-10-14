@@ -91,11 +91,11 @@
     <div class="pay-options">
       <label class="pay-option">
         <input type="radio" name="payment_method" value="clinic" {{ old('payment_method', 'clinic') === 'clinic' ? 'checked' : '' }}>
-        <span><strong>Pay at the clinic</strong><small>Cash, GCash, Maya or card at the counter.</small></span>
+        <span><strong>Pay at the clinic</strong></span>
       </label>
       <label class="pay-option {{ $onlinePayment ? '' : 'disabled' }}">
         <input type="radio" name="payment_method" value="online" {{ old('payment_method') === 'online' ? 'checked' : '' }} @disabled(! $onlinePayment)>
-        <span><strong>Pay online now</strong><small>{{ $onlinePayment ? 'GCash, Maya or card on the secure PayMongo page, right after booking.' : 'Not available right now. Please pay at the clinic.' }}</small></span>
+        <span><strong>Pay online now</strong>@unless ($onlinePayment)<small>Not available right now.</small>@endunless</span>
       </label>
     </div>
     <p class="guest-note">The amount is the price of the services you chose. If the veterinarian adds other services or medicines, you pay those at the clinic.</p>
