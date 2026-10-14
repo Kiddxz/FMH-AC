@@ -1,6 +1,6 @@
 {{-- "Cancel" for a booking, like cancelling an order in an online shop:
      the page shows only a Cancel button; clicking it opens a pop-up form.
-     In the pop-up the owner taps one of the ready reasons, types their own reason, or both.
+     In the pop-up the owner picks a ready reason from the dropdown, types their own reason, or both.
      It is sent as "cancel_reason" (e.g. "I have a schedule conflict - I have work that day"), so the controllers stay the same.
      Use: @include('partials.cancel-reason', ['action' => route(...), 'method' => 'PATCH' or 'POST', 'reference' => 'APP-000123'])
      Put the button anywhere on the page: <button type="button" data-open-cancel>✕ Cancel Appointment</button> --}}
@@ -26,11 +26,8 @@
   .cancel-x { flex-shrink: 0; width: 34px; height: 34px; border: none; border-radius: 50%; background: #f3f4f6; color: #26364a; font-size: 18px; line-height: 1; cursor: pointer; }
   .cancel-sub { margin: 0 0 16px; color: #6b7280; font-size: 14px; }
   .cancel-label { display: block; margin: 0 0 8px; color: #26364a; font-size: 14px; font-weight: bold; }
-  .cancel-options { display: grid; gap: 8px; margin-bottom: 16px; }
-  .cancel-option { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border: 1px solid #e5ddd2; border-radius: 10px; background: #fff; cursor: pointer; font-size: 15px; line-height: 1.35; }
-  .cancel-option:hover { border-color: #e04444; }
-  .cancel-option input { flex-shrink: 0; width: 18px; height: 18px; margin: 0; accent-color: #e04444; order: 2; }
-  .cancel-option:has(input:checked) { border-color: #e04444; background: #fdeeee; }
+  .cancel-modal select { width: 100%; margin-bottom: 16px; padding: 12px 14px; border: 1px solid #ddd; border-radius: 10px; background: #fff; color: #26364a; font: inherit; font-size: 15px; cursor: pointer; box-sizing: border-box; }
+  .cancel-modal select:focus { outline: none; border-color: #e04444; }
   .cancel-modal textarea { width: 100%; min-height: 90px; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; font: inherit; font-size: 15px; resize: vertical; box-sizing: border-box; }
   .cancel-modal textarea:focus { outline: none; border-color: #e04444; }
   .cancel-count { display: block; margin-top: 4px; color: #9ca3af; font-size: 12px; text-align: right; }
@@ -62,15 +59,13 @@
     </div>
     <p class="cancel-sub">Booking {{ $reference }}. Tell the clinic why you are cancelling.</p>
 
-    <span class="cancel-label">Choose a reason</span>
-    <div class="cancel-options">
+    <label class="cancel-label" for="cancel_pick">Choose a reason</label>
+    <select id="cancel_pick">
+      <option value="">Select a reason</option>
       @foreach ($reasons as $reason)
-        <label class="cancel-option">
-          <input type="radio" name="cancel_pick" value="{{ $reason }}" @checked($oldPick === $reason)>
-          <span>{{ $reason }}</span>
-        </label>
+        <option value="{{ $reason }}" @selected($oldPick === $reason)>{{ $reason }}</option>
       @endforeach
-    </div>
+    </select>
 
     <label class="cancel-label" for="cancel_text">Or write your own reason <span style="color: #9ca3af; font-weight: normal;">(you can also add details)</span></label>
     <textarea id="cancel_text" maxlength="400" placeholder="e.g. I have work on that day">{{ $oldText }}</textarea>
@@ -89,7 +84,7 @@
 </dialog>
 <script>
   // The pop-up: open with the Cancel button, close with ✕ / "Keep Appointment" / Esc / a click outside.
-  // The tapped reason and the typed text are joined into "cancel_reason".
+  // The chosen reason and the typed text are joined into "cancel_reason".
   (function () {
     var modal = document.getElementById('cancel-modal');
     var form = document.getElementById('cancel-form');
@@ -97,6 +92,7 @@
     var text = document.getElementById('cancel_text');
     var count = document.getElementById('cancel-count');
     var error = document.getElementById('cancel-pick-error');
+    var pick = document.getElementById('cancel_pick');
 
     function open() { modal.showModal(); }
     function close() { modal.close(); error.hidden = true; }
@@ -110,9 +106,9 @@
     counter();
 
     form.addEventListener('submit', function (event) {
-      var choice = form.querySelector('input[name=cancel_pick]:checked');
+      var choice = pick.value;
       var typed = text.value.trim();
-      var reason = choice ? (typed ? choice.value + ' - ' + typed : choice.value) : typed;
+      var reason = choice ? (typed ? choice + ' - ' + typed : choice) : typed;
       if (!reason) {
         event.preventDefault();
         error.hidden = false;
