@@ -7,6 +7,7 @@
  */
 $detailRole = $detailRole === 'dentist' ? 'dentist' : 'assistant';
 require_once __DIR__ . '/appointment_helpers.php';
+require_once __DIR__ . '/patient_records.php';
 $uid = (int)$_SESSION['user_id'];
 $id = (int)($_GET['id'] ?? 0);
 $detailMsg = ''; $detailType = 'success';
@@ -16,9 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         [$ok, $text] = sd_cancel_appointment($conn, $id, $uid, $detailRole, (string)($_POST['cancel_reason'] ?? ''));
         $detailMsg = $ok ? $text . ' The patient was notified.' : $text; $detailType = $ok ? 'success' : 'error';
     } elseif (($_POST['action'] ?? '') === 'complete' && $detailRole === 'dentist') {
-        $st = $conn->prepare("UPDATE appointments SET status='completed', dentist_id=COALESCE(dentist_id, ?) WHERE id=? AND (dentist_id=? OR dentist_id IS NULL) AND status='approved'");
-        $st->bind_param('iii', $uid, $id, $uid); $st->execute(); $ok = $st->affected_rows === 1; $st->close();
-        $detailMsg = $ok ? 'Appointment marked completed.' : 'Only your approved (or unassigned) appointments can be completed.'; $detailType = $ok ? 'success' : 'error';
+        $ok = sd_complete_appointment($conn, $id, $uid, mb_substr((string)($_POST['visit_notes'] ?? ''), 0, 2000), (string)($_POST['visit_teeth'] ?? ''), mb_substr((string)($_POST['visit_diagnosis'] ?? ''), 0, 255));
+        $detailMsg = $ok ? 'Appointment marked completed. The visit was saved to the patient\'s Dental Records and the patient was notified.' : 'Only your approved (or unassigned) appointments can be completed.'; $detailType = $ok ? 'success' : 'error';
     }
 }
 $st = $conn->prepare("SELECT a.*, u.first_name, u.last_name, u.email, p.phone, p.birthday, p.gender, d.first_name dentist_first, d.last_name dentist_last
@@ -89,7 +89,16 @@ ui_sidebar($detailRole, 'appointment_view.php');
         </div>
     </div>
     <?php $isActive = in_array($appt['status'], ['pending', 'approved'], true); if ($appt['status'] === 'cancelled'): ?><div class="appt-info-block"><small>Cancelled</small><p><?= e($appt['cancel_reason'] ?: 'No reason given.') ?></p></div><?php endif; ?>
-    <?php if ($isActive): ?><form method="post" class="appt-detail-actions appt-cancel-inline" onsubmit="return confirm('Cancel this appointment? The patient will be notified.')"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="cancel"><input name="cancel_reason" maxlength="255" placeholder="Reason for cancelling (sent to the patient)"><button class="btn btn-danger">Cancel Appointment</button><?php if ($detailRole === 'dentist' && $appt['status'] === 'approved' && (empty($appt['dentist_id']) || (int)$appt['dentist_id'] === $uid)): ?><button class="btn btn-secondary" formaction="" name="action" value="complete" onclick="this.form.onsubmit=null">Mark Completed</button><?php endif; ?></form><?php endif; ?>
+    <?php if ($isActive): ?><form method="post" class="appt-detail-actions appt-cancel-inline" onsubmit="return confirm('Cancel this appointment? The patient will be notified.')"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="cancel"><input name="cancel_reason" maxlength="255" placeholder="Reason for cancelling (sent to the patient)"><button class="btn btn-danger">Cancel Appointment</button></form>
+    <?php if ($detailRole === 'dentist' && $appt['status'] === 'approved' && (empty($appt['dentist_id']) || (int)$appt['dentist_id'] === $uid)): ?>
+    <form method="post" class="card appt-complete-form form-grid" onsubmit="return confirm('Mark this visit completed? What you write here is saved to the patient\'s Dental Records and the patient is notified.')">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="complete">
+        <div class="field full"><label for="visitNotes">Treatment done / notes for the patient's record</label><textarea id="visitNotes" name="visit_notes" maxlength="2000" placeholder="e.g. Oral prophylaxis done. Advised to floss daily."></textarea></div>
+        <div class="field"><label for="visitTeeth">Teeth treated</label><input id="visitTeeth" name="visit_teeth" maxlength="160" placeholder="e.g. 16, 26"></div>
+        <div class="field"><label for="visitDiagnosis">Findings / diagnosis</label><input id="visitDiagnosis" name="visit_diagnosis" maxlength="255" placeholder="e.g. Mild gingivitis"></div>
+        <div class="actions full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-circle-check"></i> Mark Completed &amp; Save to Patient Record</button></div>
+    </form>
+    <?php endif; ?><?php endif; ?>
     <?php if ($detailRole === 'dentist'): ?><div class="appt-detail-actions"><a class="btn btn-secondary" href="dental_charts.php?patient_id=<?= (int)$appt['patient_id'] ?>"><i class="fa-solid fa-teeth"></i> Dental Charts</a><a class="btn btn-primary" href="chart_editor.php?patient_id=<?= (int)$appt['patient_id'] ?>"><i class="fa-solid fa-file-circle-plus"></i> Create Chart</a></div><?php else: ?><div class="appt-detail-actions"><a class="btn btn-primary" href="chart_editor.php?patient_id=<?= (int)$appt['patient_id'] ?>"><i class="fa-solid fa-file-circle-plus"></i> Create Chart</a></div><?php endif; ?>
 </section>
 <script type="importmap">{"imports":{"three":"../assets/js/three.module.js"}}</script>

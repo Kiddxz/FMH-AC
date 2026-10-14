@@ -40,7 +40,8 @@ $add = static function (string $icon, string $title, string $text, ?string $when
 $account = patient_rows($conn, 'SELECT created_at FROM users WHERE id=? LIMIT 1', $uid);
 if ($account) $add('check', 'Account created', 'Welcome to the SupremeDent patient portal.', $account[0]['created_at']);
 if (!empty($profile['phone_verified_at'])) $add('phone', 'Contact number verified', 'Your mobile number was verified by OTP.', $profile['phone_verified_at']);
-foreach (patient_rows($conn, 'SELECT title,message,type,created_at FROM notifications WHERE patient_id=? ORDER BY created_at DESC,id DESC LIMIT 12', $uid) as $n) {
+// Record notifications are skipped here because the records themselves are listed below.
+foreach (patient_rows($conn, "SELECT title,message,type,created_at FROM notifications WHERE patient_id=? AND type<>'record' ORDER BY created_at DESC,id DESC LIMIT 12", $uid) as $n) {
     $icon = $n['type'] === 'appointment' ? (stripos($n['title'], 'declin') !== false || stripos($n['title'], 'reject') !== false ? 'declined' : 'calendar') : ($n['type'] === 'treatment' ? 'plan' : 'bell');
     $add($icon, $n['title'], $n['message'], $n['created_at']);
 }

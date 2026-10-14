@@ -124,6 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st->bind_param('iisssssi', $patient, $uid, $procedure, $toothText, $description, $tpStatus, $notes, $tpId);
                 $st->execute();
                 $st->close();
+                // Every later save by the dentist is announced to the patient as well.
+                $n = $conn->prepare("INSERT INTO notifications(patient_id,title,message,type,is_read) VALUES(?,'Treatment Plan Updated',?,'treatment',0)");
+                $nm = 'Your dentist updated your ' . $procedure . ' plan. Status: ' . $status . ($toothText !== '' ? ' · Teeth: ' . $toothText : '') . '.';
+                $n->bind_param('is', $patient, $nm);
+                $n->execute();
+                $n->close();
             } else {
                 $st = $conn->prepare('INSERT INTO treatment_plans(patient_id,dentist_id,procedure_name,tooth_number,description,status,notes) VALUES(?,?,?,?,?,?,?)');
                 $st->bind_param('iisssss', $patient, $uid, $procedure, $toothText, $description, $tpStatus, $notes);
@@ -149,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st->close();
             }
             $conn->commit();
+            log_activity($conn, $uid, 'Saved restoration plan', 'Treatment Plans', 'Order #' . $id . ' · patient #' . $patient . ' · ' . $status);
             header('Location: restoration_view.php?id=' . $id . '&saved=1');
             exit;
         } catch (Throwable $e) {

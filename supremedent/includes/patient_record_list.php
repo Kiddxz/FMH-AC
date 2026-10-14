@@ -54,10 +54,12 @@
                     <tr class="record-detail-row" id="record-<?= $r['id'] ?>" hidden>
                         <td colspan="4">
                             <div class="record-detail-grid">
+                                <?php if (!empty($r['tooth_number'])): ?><div><b>Teeth</b><?= e($r['tooth_number']) ?></div><?php endif; ?>
                                 <div><b>Diagnosis</b><?= e($r['diagnosis'] ?: 'No diagnosis recorded') ?></div>
                                 <div><b>Dentist</b><?= e($r['dentist_name'] ?: 'Not specified') ?></div>
                                 <div><b><?= e($notesLabel) ?></b><?= nl2br(e($r['notes'] ?: 'No notes recorded.')) ?></div>
                             </div>
+                            <?php if (!empty($r['chart_id'])): ?><p style="margin-top:10px"><a class="btn btn-primary btn-sm" href="chart_view.php?id=<?= (int)$r['chart_id'] ?>"><i class="fa-solid fa-teeth"></i> View full dental chart</a></p><?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

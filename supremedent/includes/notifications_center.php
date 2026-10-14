@@ -12,14 +12,14 @@
  */
 function render_notifications_center(array $nc): void
 {
-    $icons = ['appointment' => 'fa-calendar-days', 'treatment' => 'fa-tooth', 'announcement' => 'fa-bullhorn', 'general' => 'fa-bell', 'inquiry' => 'fa-envelope'];
+    $icons = ['appointment' => 'fa-calendar-days', 'treatment' => 'fa-tooth', 'announcement' => 'fa-bullhorn', 'general' => 'fa-bell', 'inquiry' => 'fa-envelope', 'record' => 'fa-file-medical', 'chart' => 'fa-teeth'];
     $items = $nc['items'] ?? [];
     $payload = [];
     foreach ($items as $n) {
         $payload[(int)$n['id']] = [
             'id' => (int)$n['id'], 'title' => (string)$n['title'], 'message' => (string)$n['message'], 'type' => (string)$n['type'],
             'read' => (int)$n['is_read'] === 1, 'at' => date('l, M d, Y · h:i A', strtotime($n['created_at'])),
-            'appointment' => $n['appointment'] ?? null, 'link' => $n['link'] ?? null,
+            'appointment' => $n['appointment'] ?? null, 'link' => $n['link'] ?? null, 'link_label' => $n['link_label'] ?? null,
         ];
     }
     $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE;
@@ -74,6 +74,7 @@ function render_notifications_center(array $nc): void
     const apptUrl = <?= json_encode($nc['appointment_url'] ?? '') ?>;
     const readApi = <?= json_encode($nc['read_api'] ?? null) ?>;
     const csrf = <?= json_encode(csrf_token()) ?>;
+    const defaultLinkLabel = <?= json_encode($nc['appointment_label'] ?? 'Open Appointment') ?>;
     const isPatient = <?= json_encode(($nc['role'] ?? '') === 'patient') ?>;
     const labels = { pending: 'Pending', approved: 'Approved', completed: 'Completed', rejected: 'Declined', cancelled: 'Cancelled' };
     const modal = document.getElementById('notifModal'), q = s => modal.querySelector(s);
@@ -102,6 +103,7 @@ function render_notifications_center(array $nc): void
         }
         const href = n.link || (a && apptUrl ? apptUrl + encodeURIComponent(a.id) : '');
         link.hidden = !href; if (href) link.href = href;
+        link.textContent = n.link_label || defaultLinkLabel;
         modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false');
         markRead(n, row);
     }));

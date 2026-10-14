@@ -18,7 +18,7 @@ if ($role === 'assistant' || $role === 'dentist') {
         $st->bind_param('i', $uid); $st->execute(); $st->close();
         header('Location: notifications.php'); exit;
     }
-    $st = $conn->prepare("SELECT n.id,n.title,n.message,n.type,n.is_read,n.created_at,
+    $st = $conn->prepare("SELECT n.id,n.title,n.message,n.type,n.is_read,n.created_at,n.patient_id n_patient_id,
             a.id a_id,a.patient_id,a.appointment_date,a.appointment_time,a.appointment_type,a.reason,a.marked_teeth,a.status,a.cancel_reason,
             u.first_name,u.last_name,d.first_name dentist_first,d.last_name dentist_last
         FROM staff_notifications n LEFT JOIN appointments a ON a.id=n.appointment_id
@@ -27,7 +27,8 @@ if ($role === 'assistant' || $role === 'dentist') {
     $st->bind_param('i', $uid);
     $st->execute();
     foreach ($st->get_result()->fetch_all(MYSQLI_ASSOC) as $r) {
-        $items[] = $r + ['appointment' => $r['a_id'] ? sd_appointment_view_data(['id' => $r['a_id']] + $r) : null, 'link' => null];
+        $chartLink = $r['type'] === 'chart' && $role === 'dentist' ? 'dental_charts.php?patient_id=' . (int)$r['n_patient_id'] : null;
+        $items[] = $r + ['appointment' => $r['a_id'] ? sd_appointment_view_data(['id' => $r['a_id']] + $r) : null, 'link' => $chartLink, 'link_label' => $chartLink ? 'Review Chart' : null];
     }
     $st->close();
 } else {
