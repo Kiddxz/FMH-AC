@@ -24,11 +24,10 @@
   .notif-read-all[hidden] { display: none; }
   .notif-list { max-height: 380px; overflow-y: auto; }
   .notif-row { position: relative; border-bottom: 1px solid #f6f1ea; }
-  .notif-row.is-unread { background: #fff7ec; }
+  .notif-row.is-unread { background: #fff; }
   .notif .notif-item { font-weight: 400; }
   .notif-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 48px 11px 16px; color: #26364a; text-decoration: none; }
-  .notif-item:hover { background: #fff1df; }
-  .notif-row.is-read .notif-item:hover { background: #fffaf3; }
+  .notif-item:hover { background: #fffaf3; }
   .notif-item > span:last-child { flex: 1; min-width: 0; }
   .notif-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; font-size: 16px; }
   .notif-icon.red { background: #fde8e8; color: #d9534f; }

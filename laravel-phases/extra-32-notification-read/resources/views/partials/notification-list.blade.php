@@ -1,5 +1,5 @@
 {{-- The list inside the bell (loaded by /notifications when the bell is clicked). Needs: $notes, $unread, $limit
-     Unread ones have a light orange background and a blue dot. Clicking one (or the check button) makes it read. --}}
+     All of them have a white background; unread ones have a bold title and a blue dot. Clicking one (or the check button) makes it read. --}}
 <div class="notif-items" data-unread="{{ $unread }}">
 @forelse ($notes->take($limit) as $note)
   <div class="notif-row {{ $note['read'] ? 'is-read' : 'is-unread' }}" data-key="{{ $note['key'] }}">
