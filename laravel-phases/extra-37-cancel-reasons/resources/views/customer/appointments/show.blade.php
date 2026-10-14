@@ -32,7 +32,7 @@
     </div>
   </section>
 
-  {{-- The reasons box opens only after "Cancel Appointment" is clicked --}}
+  {{-- "Cancel Appointment" opens the pop-up form with the reasons --}}
   @can('cancel', $appointment)
     @include('partials.cancel-reason', ['action' => route('portal.appointments.cancel', $appointment), 'method' => 'PATCH', 'reference' => $appointment->reference])
   @endcan

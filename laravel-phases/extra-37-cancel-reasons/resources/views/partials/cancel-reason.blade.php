@@ -1,6 +1,8 @@
-{{-- "Cancel" for a booking: at first only a button; clicking it opens the box with ready reasons (and "Other").
-     The chosen reason is sent as "cancel_reason", so the controllers stay the same.
-     Use: @include('partials.cancel-reason', ['action' => route(...), 'method' => 'PATCH' or 'POST', 'reference' => 'APP-000123', 'boxClass' => 'pet-form' (optional)])
+{{-- "Cancel" for a booking, like cancelling an order in an online shop:
+     the page shows only a Cancel button; clicking it opens a pop-up form.
+     In the pop-up the owner taps one of the ready reasons, types their own reason, or both.
+     It is sent as "cancel_reason" (e.g. "I have a schedule conflict - I have work that day"), so the controllers stay the same.
+     Use: @include('partials.cancel-reason', ['action' => route(...), 'method' => 'PATCH' or 'POST', 'reference' => 'APP-000123'])
      Put the button anywhere on the page: <button type="button" data-open-cancel>✕ Cancel Appointment</button> --}}
 @php
   $reasons = [
@@ -11,109 +13,117 @@
       'I have a transportation problem',
       'I booked by mistake',
   ];
-  $old = old('cancel_reason');
-  $oldIsPreset = in_array($old, $reasons, true);
+  $old = (string) old('cancel_reason');
+  $oldPick = collect($reasons)->first(fn ($r) => $old === $r || str_starts_with($old, $r . ' - '));
+  $oldText = $oldPick ? trim(substr($old, strlen($oldPick) + 3)) : $old;
 @endphp
 <style>
-  .cancel-box { margin-top: 25px; }
-  .cancel-box[hidden] { display: none; }
-  .cancel-box h2 { margin-bottom: 6px !important; }
-  .cancel-box > p { margin: 0 0 18px; color: #6b7280; }
-  .cancel-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
-  .cancel-option { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #e5ddd2; border-radius: 10px; background: #fff; cursor: pointer; font-size: 15px; line-height: 1.35; }
+  .cancel-modal { width: min(520px, calc(100vw - 24px)); max-height: calc(100vh - 24px); margin: auto; padding: 0; border: none; border-radius: 18px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3); color: #26364a; overflow: auto; }
+  .cancel-modal::backdrop { background: rgba(20, 26, 36, 0.55); }
+  .cancel-modal form { padding: 22px 22px 18px; }
+  .cancel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+  .cancel-head h2 { margin: 0 !important; font-size: 21px !important; color: #26364a; }
+  .cancel-x { flex-shrink: 0; width: 34px; height: 34px; border: none; border-radius: 50%; background: #f3f4f6; color: #26364a; font-size: 18px; line-height: 1; cursor: pointer; }
+  .cancel-sub { margin: 0 0 16px; color: #6b7280; font-size: 14px; }
+  .cancel-label { display: block; margin: 0 0 8px; color: #26364a; font-size: 14px; font-weight: bold; }
+  .cancel-options { display: grid; gap: 8px; margin-bottom: 16px; }
+  .cancel-option { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border: 1px solid #e5ddd2; border-radius: 10px; background: #fff; cursor: pointer; font-size: 15px; line-height: 1.35; }
   .cancel-option:hover { border-color: #e04444; }
-  .cancel-option input { flex-shrink: 0; width: 18px; height: 18px; margin: 0; accent-color: #e04444; }
+  .cancel-option input { flex-shrink: 0; width: 18px; height: 18px; margin: 0; accent-color: #e04444; order: 2; }
   .cancel-option:has(input:checked) { border-color: #e04444; background: #fdeeee; }
-  .cancel-other[hidden] { display: none; }
-  .cancel-other textarea { width: 100%; min-height: 90px !important; }
-  .cancel-error { margin: 0 0 12px; color: #c0392b; font-size: 14px; }
-  .cancel-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-  .cancel-actions button { padding: 13px 22px; border: none; border-radius: 8px; font: inherit; font-size: 15px; font-weight: bold; cursor: pointer; }
-  .cancel-keep { background: #eee; color: #444; }
+  .cancel-modal textarea { width: 100%; min-height: 90px; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; font: inherit; font-size: 15px; resize: vertical; box-sizing: border-box; }
+  .cancel-modal textarea:focus { outline: none; border-color: #e04444; }
+  .cancel-count { display: block; margin-top: 4px; color: #9ca3af; font-size: 12px; text-align: right; }
+  .cancel-error { margin: 10px 0 0; color: #c0392b; font-size: 14px; }
+  .cancel-error[hidden] { display: none; }
+  .cancel-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .cancel-actions button { flex: 1; padding: 13px 16px; border: none; border-radius: 10px; font: inherit; font-size: 15px; font-weight: bold; cursor: pointer; }
+  .cancel-keep { background: #f3f4f6; color: #26364a; }
   .cancel-confirm { background: #e04444; color: #fff; }
   .cancel-confirm:hover { background: #c93636; }
   [data-open-cancel] { background: #e04444 !important; color: #fff !important; }
   [data-open-cancel]:hover { background: #c93636 !important; }
-  [data-open-cancel][hidden] { display: none !important; }
-  @media (max-width: 640px) { .cancel-options { grid-template-columns: 1fr; } }
-  @media print { .cancel-box, [data-open-cancel] { display: none !important; } }
+  /* on a phone the pop-up comes up from the bottom, like in shopping apps */
+  @media (max-width: 600px) {
+    .cancel-modal { width: 100vw; max-width: 100vw; max-height: 90vh; margin: auto 0 0; border-radius: 18px 18px 0 0; }
+  }
+  @media print { .cancel-modal, [data-open-cancel] { display: none !important; } }
 </style>
-<form class="{{ $boxClass ?? 'pet-form' }} cancel-box" id="cancel-box" action="{{ $action }}" method="post" @unless ($errors->has('cancel_reason')) hidden @endunless>
-  @csrf
-  @if (strtoupper($method) !== 'POST')
-    @method($method)
-  @endif
-  <input type="hidden" name="cancel_reason" id="cancel_reason" value="{{ $old }}">
-  <h2>Cancel This Appointment</h2>
-  <p>Why are you cancelling? Choose a reason so the clinic knows.</p>
-  @error('cancel_reason')
-    <p class="cancel-error">{{ $message }}</p>
-  @enderror
-  <div class="cancel-options">
-    @foreach ($reasons as $reason)
-      <label class="cancel-option">
-        <input type="radio" name="cancel_pick" value="{{ $reason }}" @checked($old === $reason)>
-        <span>{{ $reason }}</span>
-      </label>
-    @endforeach
-    <label class="cancel-option">
-      <input type="radio" name="cancel_pick" value="other" @checked($old && ! $oldIsPreset)>
-      <span>Other reason</span>
-    </label>
-  </div>
-  <div class="form-group cancel-other" id="cancel-other" @unless ($old && ! $oldIsPreset) hidden @endunless>
-    <label for="cancel_other_text">Tell the clinic your reason</label>
-    <textarea id="cancel_other_text" rows="3" maxlength="500" placeholder="Type your reason here">{{ $oldIsPreset ? '' : $old }}</textarea>
-  </div>
-  <p class="cancel-error" id="cancel-pick-error" hidden></p>
-  <div class="cancel-actions">
-    <button type="button" class="cancel-keep" id="cancel-keep">Keep My Appointment</button>
-    <button type="submit" class="cancel-confirm">✕ Confirm Cancel</button>
-  </div>
-</form>
+<dialog class="cancel-modal" id="cancel-modal" aria-labelledby="cancel-title">
+  <form action="{{ $action }}" method="post" id="cancel-form">
+    @csrf
+    @if (strtoupper($method) !== 'POST')
+      @method($method)
+    @endif
+    <input type="hidden" name="cancel_reason" id="cancel_reason" value="{{ $old }}">
+    <div class="cancel-head">
+      <h2 id="cancel-title">Cancel Appointment</h2>
+      <button type="button" class="cancel-x" data-close-cancel aria-label="Close">✕</button>
+    </div>
+    <p class="cancel-sub">Booking {{ $reference }}. Tell the clinic why you are cancelling.</p>
+
+    <span class="cancel-label">Choose a reason</span>
+    <div class="cancel-options">
+      @foreach ($reasons as $reason)
+        <label class="cancel-option">
+          <input type="radio" name="cancel_pick" value="{{ $reason }}" @checked($oldPick === $reason)>
+          <span>{{ $reason }}</span>
+        </label>
+      @endforeach
+    </div>
+
+    <label class="cancel-label" for="cancel_text">Or write your own reason <span style="color: #9ca3af; font-weight: normal;">(you can also add details)</span></label>
+    <textarea id="cancel_text" maxlength="400" placeholder="e.g. I have work on that day">{{ $oldText }}</textarea>
+    <span class="cancel-count"><span id="cancel-count">0</span>/400</span>
+
+    @error('cancel_reason')
+      <p class="cancel-error">{{ $message }}</p>
+    @enderror
+    <p class="cancel-error" id="cancel-pick-error" hidden>Please choose a reason or write your own.</p>
+
+    <div class="cancel-actions">
+      <button type="button" class="cancel-keep" data-close-cancel>Keep Appointment</button>
+      <button type="submit" class="cancel-confirm">Confirm Cancel</button>
+    </div>
+  </form>
+</dialog>
 <script>
-  // Open the box with the "Cancel" button; the chosen reason (or the typed one) goes into "cancel_reason"
+  // The pop-up: open with the Cancel button, close with ✕ / "Keep Appointment" / Esc / a click outside.
+  // The tapped reason and the typed text are joined into "cancel_reason".
   (function () {
-    var box = document.getElementById('cancel-box');
+    var modal = document.getElementById('cancel-modal');
+    var form = document.getElementById('cancel-form');
     var hidden = document.getElementById('cancel_reason');
-    var other = document.getElementById('cancel-other');
-    var otherText = document.getElementById('cancel_other_text');
+    var text = document.getElementById('cancel_text');
+    var count = document.getElementById('cancel-count');
     var error = document.getElementById('cancel-pick-error');
-    var openers = document.querySelectorAll('[data-open-cancel]');
 
-    function picked() { return box.querySelector('input[name=cancel_pick]:checked'); }
-    function showOpeners(show) { openers.forEach(function (b) { b.hidden = !show; }); }
-    if (!box.hidden) showOpeners(false);
+    function open() { modal.showModal(); }
+    function close() { modal.close(); error.hidden = true; }
+    function counter() { count.textContent = text.value.length; }
 
-    openers.forEach(function (button) {
-      button.addEventListener('click', function () {
-        box.hidden = false;
-        showOpeners(false);
-        box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-    document.getElementById('cancel-keep').addEventListener('click', function () {
-      box.hidden = true;
-      showOpeners(true);
-      error.hidden = true;
-    });
-    box.addEventListener('change', function (event) {
-      if (event.target.name !== 'cancel_pick') return;
-      other.hidden = event.target.value !== 'other';
-      error.hidden = true;
-      if (!other.hidden) otherText.focus();
-    });
-    box.addEventListener('submit', function (event) {
-      var choice = picked();
-      var reason = !choice ? '' : (choice.value === 'other' ? otherText.value.trim() : choice.value);
+    document.querySelectorAll('[data-open-cancel]').forEach(function (b) { b.addEventListener('click', open); });
+    modal.querySelectorAll('[data-close-cancel]').forEach(function (b) { b.addEventListener('click', close); });
+    modal.addEventListener('click', function (event) { if (event.target === modal) close(); });   // click outside
+    modal.addEventListener('change', function () { error.hidden = true; });
+    text.addEventListener('input', function () { counter(); error.hidden = true; });
+    counter();
+
+    form.addEventListener('submit', function (event) {
+      var choice = form.querySelector('input[name=cancel_pick]:checked');
+      var typed = text.value.trim();
+      var reason = choice ? (typed ? choice.value + ' - ' + typed : choice.value) : typed;
       if (!reason) {
         event.preventDefault();
-        error.textContent = !choice ? 'Please choose a reason.' : 'Please type your reason.';
         error.hidden = false;
         return;
       }
       hidden.value = reason;
-      if (!confirm('Cancel booking {{ $reference }}?')) event.preventDefault();
     });
+
+    // The form came back with an error: show the pop-up again
+    @if ($errors->has('cancel_reason'))
+      open();
+    @endif
   })();
 </script>

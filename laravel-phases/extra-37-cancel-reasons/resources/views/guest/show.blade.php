@@ -32,9 +32,9 @@
   @endif
 
   @if ($canCancel)
-    {{-- The reasons box opens only after "Cancel Booking" is clicked --}}
+    {{-- "Cancel Booking" opens the pop-up form with the reasons --}}
     <button class="regisbtn" type="button" data-open-cancel>✕ Cancel Booking</button>
-    @include('partials.cancel-reason', ['action' => route('guest.lookup.cancel'), 'method' => 'POST', 'reference' => $appointment->reference, 'boxClass' => ''])
+    @include('partials.cancel-reason', ['action' => route('guest.lookup.cancel'), 'method' => 'POST', 'reference' => $appointment->reference])
   @endif
 
   <div class="guest-links">
