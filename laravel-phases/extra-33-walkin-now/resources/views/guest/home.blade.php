@@ -18,11 +18,6 @@
           <a href="{{ route('guest.book') }}" class="wk-btn primary">{!! $calendar !!} Book a Visit</a>
           <a href="{{ route('guest.lookup') }}" class="wk-btn outline">{!! $search !!} Check My Booking</a>
         </div>
-        <div class="wk-trust">
-          <span>{!! $check !!} Free to book</span>
-          <span>{!! $check !!} {{ $onlinePayment ? 'Pay at the clinic or online' : 'Pay at the clinic' }}</span>
-          <span>{!! $check !!} No account or password needed</span>
-        </div>
       </div>
 
       <aside class="wk-card">
