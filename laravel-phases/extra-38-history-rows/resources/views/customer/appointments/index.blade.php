@@ -17,7 +17,7 @@
   .appt-cell { min-width: 0; color: #374151; font-size: 14.5px; overflow-wrap: anywhere; }
   .appt-go { text-align: right; }
   .appt-go a { display: inline-block; padding: 9px 14px; border-radius: 10px; background: #fff1df; color: #c46f0c; font-size: 14px; font-weight: 700; text-decoration: none !important; border: none !important; white-space: nowrap; }
-  .appt-go a:hover { background: #e89427; color: #fff; }
+  .appt-go a:hover { background: #ffe6c7; color: #b5630a !important; }
   /* smaller screens: each box shows its details one under the other */
   @media (max-width: 1000px) {
     .appt-head { display: none; }
