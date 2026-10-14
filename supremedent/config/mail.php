@@ -175,11 +175,19 @@ function sendViaGmailSmtp(string $to, string $subject, string $body): bool
 function sendOtpEmail(string $email, string $name, string $otp, string $purpose, string $extra = ''): bool
 {
     $subjects = ['signup' => 'SupremeDent Patient Registration Code', 'reset' => 'SupremeDent Password Reset',
-        'register' => 'SupremeDent Email Verification Code'];
+        'register' => 'SupremeDent Email Verification Code', 'login' => 'SupremeDent Sign-in Code',
+        'setup' => 'SupremeDent Super Admin Setup Code'];
     $subject = $subjects[$purpose] ?? 'SupremeDent Email Test Code';
-    $intro = $purpose === 'reset'
-        ? "We received a request to reset the password of your SupremeDent account.\n\nYour password reset code is: {$otp}\n\n"
-        : "Your SupremeDent verification code is: {$otp}\n\n";
+    if ($purpose === 'reset') {
+        $intro = "We received a request to reset the password of your SupremeDent account.\n\nYour password reset code is: {$otp}\n\n";
+    } elseif ($purpose === 'login') {
+        $intro = "Someone entered the correct password for your SupremeDent account and is signing in.\n\nYour sign-in code is: {$otp}\n\n"
+            . "If this was not you, do not share this code. Change your password right away and tell the clinic.\n\n";
+    } elseif ($purpose === 'setup') {
+        $intro = "A Super Admin account is being created for this email address with the SupremeDent setup tool.\n\nYour verification code is: {$otp}\n\n";
+    } else {
+        $intro = "Your SupremeDent verification code is: {$otp}\n\n";
+    }
     $body = "Hello {$name},\n\n" . $intro
         . ($extra !== '' ? $extra . "\n\n" : '')
         . ($purpose === 'test' ? "This is a mail connection test; it cannot be used to sign up or reset a password.\n\n" :
@@ -218,4 +226,12 @@ function sendPatientCredentialsEmail(string $email, string $name, string $passwo
         . "For your security, please sign in and change this password from your profile (Change Password).\n"
         . "Never share your password with anyone.\n\nSupremeDent Dental Services";
     return sendViaGmailSmtp($email, 'Your SupremeDent Patient Account', $body);
+}
+
+/** Short security alert (email changed, new Super Admin created). Best effort: failures are only logged. */
+function sendSecurityNoticeEmail(string $email, string $name, string $subject, string $text): bool
+{
+    $body = "Hello {$name},\n\n{$text}\n\nIf you did not expect this change, sign in and change your password right away, "
+        . "or contact the clinic.\n\nSupremeDent Dental Services";
+    return sendViaGmailSmtp($email, $subject, $body);
 }

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config/mail.php';
 function otp_issue(mysqli $conn, string $email, string $purpose, string $displayName = 'SupremeDent User'): array
 {
     $email = strtolower(trim($email));
-    $allowed = ['signup', 'reset', 'register'];
+    $allowed = ['signup', 'reset', 'register', 'login', 'setup'];
     if (!valid_email_address($email) || !in_array($purpose, $allowed, true)) {
         return [false, 'Please enter a valid email address.'];
     }
@@ -52,7 +52,17 @@ function otp_issue(mysqli $conn, string $email, string $purpose, string $display
         $stmt->close();
     }
 
-    if ($purpose === 'signup' || $purpose === 'register') {
+    if ($purpose === 'login') {
+        // Sign-in codes are only issued by auth/login.php after the password was verified.
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email=? AND status='active' LIMIT 1");
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $active = $stmt->get_result()->num_rows > 0;
+        $stmt->close();
+        if (!$active) return [false, 'This account cannot sign in.'];
+    }
+
+    if ($purpose === 'signup' || $purpose === 'register' || $purpose === 'setup') {
         $stmt = $conn->prepare("SELECT id FROM users WHERE email=? LIMIT 1");
         $stmt->bind_param('s', $email);
         $stmt->execute();

@@ -1,0 +1,23 @@
+<?php
+/**
+ * Copy this file to config/security.local.php (it is ignored by git) and fill in your own values.
+ */
+return [
+    // Secret needed to open superadmin_setup/ (create the first or a backup Super Admin).
+    // Use at least 24 random characters. Leave empty to keep the setup tool locked.
+    'setup_key' => '',
+
+    // Computers allowed to open superadmin_setup/. Keep this to the server itself.
+    'setup_allowed_ips' => ['127.0.0.1', '::1'],
+
+    // true = the new Super Admin's email must be verified with a 6-digit code (recommended).
+    // Set to false only when Gmail is not configured yet (first offline install).
+    'setup_email_otp' => true,
+
+    // Emergency switch: true turns OFF the emailed sign-in code (2-step verification) for every role,
+    // for example when Gmail stops working and nobody can sign in. Turn it back to false afterwards.
+    'disable_login_otp' => false,
+
+    // true shows PHP errors in the browser. Only for local development, never on a real server.
+    'debug' => false,
+];

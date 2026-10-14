@@ -1,3 +1,6 @@
+# Private settings: passwords, API tokens and the super admin setup key never go into git.
 config/mail.local.php
-storage/otp.log
 config/sms.local.php
+config/security.local.php
+config/database.local.php
+storage/*.log

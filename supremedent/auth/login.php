@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../config/security.php';
 start_secure_session();
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/auth_helpers.php';
+require_once __DIR__ . '/otp_helpers.php';
 
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
@@ -47,12 +49,15 @@ function login_attempt_failed(mysqli $conn, string $email, array $state): array
     $st->close();
     return ['failed' => $failed, 'level' => $level, 'locked_ts' => $lockedUntil ? strtotime($lockedUntil) : 0];
 }
-function login_attempt_clear(mysqli $conn, string $email): void
+/** True when the newest emailed sign-in code for this email can still be used. */
+function login_code_active(mysqli $conn, string $email): bool
 {
-    $st = $conn->prepare('DELETE FROM login_attempts WHERE email=?');
+    $st = $conn->prepare("SELECT used_at IS NULL AND expires_at>NOW() AND attempts<5 ok FROM auth_otps WHERE email=? AND purpose='login' ORDER BY id DESC LIMIT 1");
     $st->bind_param('s', $email);
     $st->execute();
+    $ok = (int)($st->get_result()->fetch_assoc()['ok'] ?? 0) === 1;
     $st->close();
+    return $ok;
 }
 function login_lock_message(int $seconds): string
 {
@@ -61,9 +66,14 @@ function login_lock_message(int $seconds): string
     return 'Too many failed sign-in attempts. Please wait ' . $m . ':' . str_pad((string)$s, 2, '0', STR_PAD_LEFT) . ' before trying again.';
 }
 
+// Many failed sign-ins from one network (password spraying across many emails) pause that network for 15 minutes.
+const LOGIN_IP_MAX_FAILURES = 30;
+const LOGIN_IP_WINDOW = 900;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $emailValue;
     $password = (string)($_POST['login_password'] ?? '');
+    $ipBucket = 'login_ip:' . client_ip();
 
     if (!csrf_valid($_POST['csrf_token'] ?? null)) {
         $message = 'Your session expired. Refresh the page and try again.';
@@ -71,19 +81,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'Enter a valid email address.';
     } elseif ($password === '') {
         $message = 'Enter your password.';
+    } elseif (sd_rate_limited($conn, $ipBucket, LOGIN_IP_MAX_FAILURES, LOGIN_IP_WINDOW)) {
+        $message = 'Too many failed sign-in attempts from this network. Please wait 15 minutes and try again.';
     } elseif (($attempt = login_attempt_state($conn, $email)) && $attempt['locked_ts'] > time()) {
         $lockSeconds = $attempt['locked_ts'] - time();
         $message = login_lock_message($lockSeconds);
     } else {
-        $stmt = $conn->prepare("SELECT id,first_name,last_name,email,password,role,status FROM users WHERE email=? LIMIT 1");
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email=? LIMIT 1");
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
         $badEmail = !$user || $user['status'] !== 'active';
-        if ($badEmail || !password_verify($password, $user['password'])) {
+        // Always run one bcrypt check so a missing account takes as long as a wrong password.
+        $passwordOk = password_verify($password, $badEmail ? '$2y$10$tkXtNN55CABXWptIoaGP/..5cRZAe5euEx0MkrKdflb/Cz2urtJiW' : (string)$user['password']);
+        if ($badEmail || !$passwordOk) {
             usleep(250000);
+            sd_rate_hit($conn, $ipBucket, LOGIN_IP_WINDOW);
             $attempt = login_attempt_failed($conn, $email, $attempt);
             if ($attempt['locked_ts'] > time()) {
                 $lockSeconds = $attempt['locked_ts'] - time();
@@ -91,36 +106,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($user) log_activity($conn, (int)$user['id'], 'Sign-in locked', 'Authentication', 'Locked for ' . ceil($lockSeconds / 60) . ' minutes after failed attempts');
             } else {
                 $left = LOGIN_MAX_ATTEMPTS - $attempt['failed'];
-                $message = ($badEmail ? "The email address that you've entered isn't connected to an account." : "The password that you've entered is incorrect.")
-                    . ' ' . $left . ' attempt' . ($left === 1 ? '' : 's') . ' remaining.';
-                $wrongPassword = !$badEmail;
+                // One message for both cases, so the form cannot be used to find out which emails have accounts.
+                $message = 'The email or password you entered is incorrect. ' . $left . ' attempt' . ($left === 1 ? '' : 's') . ' remaining.';
+                $wrongPassword = true;
             }
+        } elseif (sd_login_destination((string)$user['role']) === null) {
+            $message = 'This account cannot sign in. Please contact the clinic.';
         } else {
-            login_attempt_clear($conn, $email);
-            // Continue in this role's own portal session (new session id), so signing in here does not
-            // sign out the other portals open in this browser.
-            switch_to_portal_session((string)$user['role']);
-            $_SESSION['user_id'] = (int)$user['id'];
-            $_SESSION['first_name'] = $user['first_name'];
-            $_SESSION['last_name'] = $user['last_name'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['last_activity'] = time();
-            $_SESSION['session_regenerated_at'] = time();
-            log_activity($conn, (int)$user['id'], 'Signed in', 'Authentication', 'Role: '.$user['role']);
-
-            $destinations = [
-                'patient'=>'../patient/dashboard.php',
-                'assistant'=>'../assistant/dashboard.php',
-                'dentist'=>'../dentist/dashboard.php',
-                'superadmin'=>'../superadmin/dashboard.php',
-            ];
-            if (isset($destinations[$user['role']])) {
-                header('Location: '.$destinations[$user['role']]);
-                exit;
+            if (password_needs_rehash((string)$user['password'], PASSWORD_DEFAULT)) {
+                $user['password'] = password_hash($password, PASSWORD_DEFAULT);
+                $st = $conn->prepare('UPDATE users SET password=? WHERE id=?');
+                $uid = (int)$user['id'];
+                $st->bind_param('si', $user['password'], $uid);
+                $st->execute();
+                $st->close();
             }
-            session_destroy();
-            $message = 'Invalid user role.';
+            if (sd_login_otp_required($conn, (string)$user['role'])) {
+                // 2-step verification: the password was right, now prove access to the account's email.
+                $otp = otp_issue($conn, $email, 'login', trim($user['first_name'] . ' ' . $user['last_name']));
+                // During the 1-minute cooldown, continue only if the code sent just before is still usable.
+                $usable = $otp[0] || (($otp[2]['code'] ?? '') === 'cooldown' && login_code_active($conn, $email));
+                if (!$usable) {
+                    $message = (($otp[2]['code'] ?? '') === 'cooldown' ? 'Please wait a minute before requesting another sign-in code.' : $otp[1]) . ' The sign-in code could not be sent.';
+                } else {
+                    session_regenerate_id(true);
+                    $_SESSION['pending_login'] = ['user_id' => (int)$user['id'], 'email' => $email, 'started' => time(), 'fp' => sd_auth_fingerprint((string)$user['password'])];
+                    log_activity($conn, (int)$user['id'], 'Password accepted, sign-in code sent', 'Authentication', 'Role: ' . $user['role']);
+                    header('Location: login_verify.php');
+                    exit;
+                }
+            } else {
+                sd_complete_login($conn, $user, 'password');
+            }
         }
     }
 }
@@ -138,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <main class="auth-form-panel"><a href="../index.php" class="auth-back"><i class="fa-solid fa-arrow-left"></i> Back to Home</a><div class="auth-form-wrap">
 <div class="auth-wordmark">SUPREMEDENT</div><p class="auth-kicker">Sign in to your account</p>
 <?php if($message):?><div class="auth-message is-error" style="display:block" role="alert" id="loginMessage"<?php if($lockSeconds>0):?> data-lock-seconds="<?=(int)$lockSeconds?>"<?php endif;?>><span id="loginMessageText"><?=e($message)?></span><?php if($wrongPassword||$lockSeconds>0):?> <a href="forgot_password.php">Forgotten password?</a><?php endif;?></div><?php endif;?>
+<?php if(isset($_GET['code_failed'])):?><div class="auth-message is-error" style="display:block" role="alert">Too many wrong sign-in codes. Enter your password again to get a new code.</div><?php endif;?>
 <?php if(isset($_GET['reset'])):?><div class="auth-message is-success" style="display:block" role="status">Password reset successfully. You can now log in.</div><?php endif;?>
 <?php if(isset($_GET['verified'])||isset($_GET['registered'])):?><div class="auth-message is-success" style="display:block" role="status"><i class="fa-solid fa-circle-check"></i> Account verified. You can now log in.</div><?php endif;?>
 <form method="post" autocomplete="off" id="loginForm">
