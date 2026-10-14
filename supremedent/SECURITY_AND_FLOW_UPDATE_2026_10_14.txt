@@ -1,0 +1,121 @@
+SUPREMEDENT — SECURITY & FLOW UPDATE (2026-10-14)
+Database changes are applied automatically the first time any page loads (config/schema.php,
+clinic_settings.schema_revision = 3). Your existing data, accounts and passwords are kept.
+
+==========================================================================================
+A. DENTIST -> PATIENT: EVERYTHING THE DENTIST SAVES REACHES THE PATIENT
+==========================================================================================
+Every item below creates (or updates) an entry in the patient's Dental Records and sends the
+patient a notification ("New Dental Record" / "Dental Record Updated" / "Treatment Plan Updated").
+The notification opens "View My Dental Records".
+
+1. Dental chart (Dental Charts > Create/Edit Chart)
+   -> Record "Dental Examination (Dental Chart)" with the marked teeth (e.g. "Caries: 16, 26"),
+      the recommendations and the clinical notes. Editing the chart updates the same record.
+   -> The patient can open "View full dental chart" (patient/chart_view.php) and print it.
+   -> Charts prepared by an ASSISTANT stay internal until a dentist confirms (edits/saves) them;
+      the dentists get a "Chart ready for review" notification.
+2. Patients > (patient) > Dental Records > "Save & Send to Patient"  (NEW form)
+   -> Date, procedure/service, tooth numbers, diagnosis, notes/after-care instructions.
+3. Appointment > Full Details > "Mark Completed & Save to Patient Record"  (NEW)
+   -> Treatment done, teeth treated, findings. Saved as the visit record.
+4. 3D Odontogram save -> record with the condition, treatment and teeth.
+5. Treatment plan (restoration) create AND every later update -> notification with the status.
+6. Deleting a chart (only the dentist who confirmed it) also removes its patient record.
+
+Patient side:
+- Dental Records shows every record (date, service, dentist, teeth, diagnosis, notes).
+- Treatment History shows treatments and visits (examination charts are only in Dental Records).
+
+==========================================================================================
+B. SUPER ADMIN
+==========================================================================================
+- Dashboard buttons fixed: "Review Appointments" and "View Dentist Queue" now open the Super Admin's
+  own Appointments page (they used to point to assistant/dentist pages the Super Admin cannot open).
+- "Pending review" (always 0 since bookings are auto-approved) was replaced by Today, Upcoming,
+  Need a dentist, and Cancelled this month. A Security card shows active Super Admins and security events.
+- NEW sidebar item "Appointments": month/status/dentist filters, Dentist Queue (today / upcoming /
+  completed per dentist), Assign/Reassign dentist, Cancel with reason.
+- Users: search + role filter, last sign-in column. Giving or removing Super Admin rights asks for
+  your password. Inactive accounts are signed out immediately.
+- Roles & Permissions > Sign-in Security: choose which roles must enter an emailed sign-in code.
+- Backup & Recovery: your password is required to download the database backup.
+- New Dentist/Assistant accounts must change the password you gave them on first sign-in.
+
+==========================================================================================
+C. BACKUP SUPER ADMIN — superadmin_setup/   (NEW FOLDER)
+==========================================================================================
+Use it to create the FIRST Super Admin of a new database, or a BACKUP Super Admin so the clinic is
+never locked out. (The SQL dumps no longer contain default accounts with known passwords.)
+
+How to use (on the server computer itself, e.g. the XAMPP PC):
+1. Copy config/security.local.php.example to config/security.local.php.
+2. Open http://localhost/supremedent/superadmin_setup/ — it shows a random key you can use.
+   Put that key in 'setup_key' and save the file.
+3. Reload the page, enter the setup key, the new admin's name, email and a 12+ character password.
+4. Enter the 6-digit code sent to that email. The account is created.
+   (No Gmail yet on a first install? Set 'setup_email_otp' => false temporarily.)
+5. Clear 'setup_key' again to lock the tool.
+
+Protection: works only from the server computer (localhost; .htaccess "Require local" + IP check),
+needs the secret key, 5 wrong keys pause it for 15 minutes, the email is verified by code, the
+creation is written to Activity Logs and every other Super Admin receives an email alert.
+
+==========================================================================================
+D. SECURITY HARDENING (data privacy / anti-hacking / account takeover)
+==========================================================================================
+Accounts & sign-in
+- 2-step verification: after the correct password, Super Admin (default) must enter a 6-digit code
+  sent to their email (auth/login_verify.php). Other roles can be switched on by the Super Admin.
+  Emergency switch: 'disable_login_otp' => true in config/security.local.php.
+- Same error for unknown email and wrong password (attackers cannot find out which emails exist).
+- Network limit: 30 failed sign-ins from one network pause it for 15 minutes (on top of the
+  existing 5-attempt email lock). The email-availability check and the Contact Us form are rate limited.
+- Changing or resetting a password signs out every other device of that account.
+- Sessions end after 30 minutes idle (as before) AND after 12 hours in any case.
+- Changing the sign-in email requires the current password, and the OLD email gets an alert.
+- Temporary/admin-set passwords must be changed on first sign-in.
+- Common passwords ("password", "qwerty", "12345678", "supremedent", "admin123"...) are rejected.
+
+Requests & pages
+- CSRF protection on EVERY portal form and request (7 forms had none, incl. Website Content,
+  Inquiries, Laboratory, restoration plans and the odontogram save).
+- Extra headers: Content-Security-Policy (no framing by other sites, no foreign form targets),
+  HSTS on HTTPS, Cross-Origin-Opener-Policy.
+- PHP errors are no longer shown to visitors (they go to the PHP error log). 'debug' => true in
+  config/security.local.php shows them during development.
+- Messages: a user can only open conversations with people they may message.
+- .htaccess also blocks .txt/.md/.example/.pem files and hidden files.
+
+Clinical data integrity
+- Assistants can no longer edit a chart a dentist confirmed, nor write patient records directly
+  (old assistant/dental_chart.php now redirects to Create Chart).
+- A dentist can delete only their own charts (or unconfirmed assistant drafts). Deletions are logged.
+- Important actions are written to Activity Logs (charts, records, plans, settings, backups, role changes).
+
+Configuration & secrets
+- config/database.php can read config/database.local.php or SUPREMEDENT_DB_* environment variables,
+  so a real server can use a dedicated MySQL user instead of root with no password.
+- Private files never go to git: config/mail.local.php, config/sms.local.php,
+  config/security.local.php, config/database.local.php, storage/*.log.
+- Removed old copies that bypassed the new protections: auth/login_original.php (no lockout),
+  auth/signup_original.php, auth/signup_backup.php, index_original.php, config/mail_test.php.
+- Old unused dentist pages now redirect: dental_chart.php (was broken), Treatment_plan.php (mock-up),
+  dental_management.php, dental_records.php (records are added on Patient Care).
+
+==========================================================================================
+E. OTHER FLOW FIXES
+==========================================================================================
+- Patients can reschedule APPROVED upcoming appointments (before: pending only, which no longer
+  exist). The same dentist is kept if free, otherwise a free dentist is assigned; staff are notified.
+- Assistants (and the Super Admin) can assign a dentist to bookings made when no dentist was free.
+- Patient Care page links the 3D Odontogram.
+
+==========================================================================================
+F. RECOMMENDED FOR A REAL (ONLINE) SERVER
+==========================================================================================
+- Use HTTPS; set 'app_url' in config/mail.local.php.
+- Create a dedicated MySQL user (see config/database.local.php.example).
+- Turn on the sign-in code for Dentist too (Roles & Permissions > Sign-in Security).
+- Keep a backup Super Admin, then clear 'setup_key'.
+- Rotate the Gmail App Password and the SMS API token if the old ZIP was shared with anyone.

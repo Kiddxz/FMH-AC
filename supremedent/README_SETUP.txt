@@ -39,6 +39,8 @@ This package is a **separate merged copy**. The original `supremedent_up1(1).zip
 2. Start **Apache** and **MySQL** in XAMPP.
 3. In phpMyAdmin, create/select `supremedent_db`.
 4. Import `supremedent_db.sql`.
+   - It contains no default accounts. Create the first Super Admin with `superadmin_setup/`
+     (see SECURITY_AND_FLOW_UPDATE_2026_10_14.txt, section C).
    - If you are replacing your current database, export/backup it first.
 5. Open:
    `http://localhost/supremedent_merged/`

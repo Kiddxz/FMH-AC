@@ -10,7 +10,8 @@ INSTALL / RUN
 3. Make sure the database is named:
    supremedent_db
 
-4. For a fresh setup, import supremedent_db.sql.
+4. For a fresh setup, import supremedent_db.sql, then create the first Super Admin with
+   superadmin_setup/ (see SECURITY_AND_FLOW_UPDATE_2026_10_14.txt, section C).
    For an existing database, you can import supremedent_upgrade.sql.
    The PHP connection also creates missing tables/settings automatically.
 

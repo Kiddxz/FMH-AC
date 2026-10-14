@@ -101,6 +101,52 @@ function sd_pick_dentist(mysqli $conn, string $date, string $time, int $excludeA
     return null;
 }
 
+/** True when this active dentist has no other active appointment and no blocked time at that date/time. */
+function sd_dentist_free(mysqli $conn, int $dentistId, string $date, string $time, int $excludeAppointment = 0): bool
+{
+    $time = substr($time, 0, 5) . ':00';
+    $st = $conn->prepare("SELECT 1 FROM users WHERE id=? AND role='dentist' AND status='active' LIMIT 1");
+    $st->bind_param('i', $dentistId);
+    $st->execute();
+    $active = $st->get_result()->num_rows > 0;
+    $st->close();
+    if (!$active) return false;
+    $st = $conn->prepare("SELECT 1 FROM appointments WHERE dentist_id=? AND appointment_date=? AND appointment_time=? AND status IN ('pending','approved') AND id<>? LIMIT 1");
+    $st->bind_param('issi', $dentistId, $date, $time, $excludeAppointment);
+    $st->execute();
+    $busy = $st->get_result()->num_rows > 0;
+    $st->close();
+    return !$busy && !sd_staff_unavailable($conn, $dentistId, $date, $time);
+}
+
+/**
+ * Assigns (or reassigns) a dentist to an active appointment after checking the dentist is free.
+ * Used by the assistant desk and the Super Admin for bookings that had no free dentist. Returns [ok, message].
+ */
+function sd_assign_dentist(mysqli $conn, int $appointmentId, int $dentistId, int $actorId): array
+{
+    $a = sd_load_appointment($conn, $appointmentId);
+    if (!$a || !in_array($a['status'], ['pending', 'approved'], true)) return [false, 'Only active appointments can be assigned.'];
+    if ((int)$a['dentist_id'] === $dentistId) return [false, 'That dentist is already assigned.'];
+    if (!sd_dentist_free($conn, $dentistId, $a['appointment_date'], $a['appointment_time'], $appointmentId)) return [false, 'That dentist is not available at this schedule.'];
+    $st = $conn->prepare("UPDATE appointments SET dentist_id=? WHERE id=? AND status IN ('pending','approved')");
+    $st->bind_param('ii', $dentistId, $appointmentId);
+    $st->execute();
+    $st->close();
+    $when = sd_appointment_when($a);
+    $patientName = trim($a['first_name'] . ' ' . $a['last_name']);
+    $st = $conn->prepare("SELECT CONCAT(first_name,' ',last_name) n FROM users WHERE id=?");
+    $st->bind_param('i', $dentistId);
+    $st->execute();
+    $dentistName = (string)($st->get_result()->fetch_assoc()['n'] ?? 'your dentist');
+    $st->close();
+    sd_notify_staff($conn, [], array_filter([$dentistId, (int)$a['dentist_id']]), 'Appointment assigned · ' . $patientName,
+        $patientName . "'s " . $a['appointment_type'] . ' on ' . $when . ' is now assigned to Dr. ' . $dentistName . '.', $appointmentId, (int)$a['patient_id'], $actorId);
+    sd_notify_patient($conn, (int)$a['patient_id'], 'Dentist Assigned', 'Dr. ' . $dentistName . ' will attend to your ' . $a['appointment_type'] . ' appointment on ' . $when . '.', 'appointment', $appointmentId);
+    if (function_exists('log_activity')) log_activity($conn, $actorId, 'Assigned dentist', 'Appointments', 'Appointment #' . $appointmentId . ' → dentist #' . $dentistId);
+    return [true, 'Dr. ' . $dentistName . ' is now assigned to this appointment.'];
+}
+
 function sd_load_appointment(mysqli $conn, int $id): ?array
 {
     $st = $conn->prepare("SELECT a.*, u.first_name, u.last_name, u.email, d.first_name dentist_first, d.last_name dentist_last
