@@ -11,8 +11,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $email=trim($_POST['clinic_email']??'');$slot=(int)($_POST['appointment_slot_minutes']??60);$lead=(int)($_POST['booking_lead_hours']??3);
     if($email!==''&&!filter_var($email,FILTER_VALIDATE_EMAIL)){$msg='Please enter a valid clinic email address.';$type='error';}
     elseif($slot<15||$slot>240||$lead<0||$lead>72){$msg='Please check the appointment slot and lead-time settings.';$type='error';}
-    elseif(!preg_match('/^([01]\d|2[0-3]):[0-5]\d$/',(string)($_POST['appointment_start_time']??''))||!preg_match('/^([01]\d|2[0-3]):[0-5]\d$/',(string)($_POST['appointment_end_time']??''))||$_POST['appointment_start_time']>=$_POST['appointment_end_time']){$msg='The appointment end time must be later than the start time.';$type='error';}
-    else{foreach($keys as $k){$v=$k==='laboratory_enabled'?(isset($_POST[$k])?'1':'0'):mb_substr(trim((string)($_POST[$k]??'')),0,500);$st=$conn->prepare('INSERT INTO clinic_settings(setting_key,setting_value) VALUES(?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)');$st->bind_param('ss',$k,$v);$st->execute();$st->close();}$msg='Website and appointment settings updated.';log_activity($conn,(int)$_SESSION['user_id'],'Updated website settings','Website Content','Clinic details and booking rules');}
+    else{foreach($keys as $k){$v=$k==='laboratory_enabled'?(isset($_POST[$k])?'1':'0'):trim($_POST[$k]??'');$st=$conn->prepare('INSERT INTO clinic_settings(setting_key,setting_value) VALUES(?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)');$st->bind_param('ss',$k,$v);$st->execute();$st->close();}$msg='Website and appointment settings updated.';}
 }
 $settings=clinic_settings($conn);require '../includes/ui.php';ui_header('Website Content','superadmin');ui_sidebar('superadmin','website_content.php');
 ?>

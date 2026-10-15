@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // The email is verified: create the account with a random password and email the login details.
             $password = sd_random_password();
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $st = $conn->prepare("INSERT INTO users(first_name,last_name,email,password,role,status,must_change_password) VALUES(?,?,?,?,'patient','active',1)");
+            $st = $conn->prepare("INSERT INTO users(first_name,last_name,email,password,role,status) VALUES(?,?,?,?,'patient','active')");
             $st->bind_param('ssss', $fn, $ln, $email, $hash);
             if ($st->execute()) {
                 $newId = (int) $st->insert_id;

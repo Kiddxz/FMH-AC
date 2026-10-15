@@ -21,12 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_action'] ?? '') === '
     } elseif ($honeypot !== '') {
         $contactMessage = 'Unable to send your message.';
         $contactType = 'error';
-    } elseif ($name === '' || mb_strlen($name) > 150 || !valid_email_address($email) || mb_strlen($phone) > 50 || mb_strlen($subject) > 180 || mb_strlen($message) < 5 || mb_strlen($message) > 3000) {
+    } elseif ($name === '' || mb_strlen($name) > 150 || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($message) < 5 || mb_strlen($message) > 3000) {
         $contactMessage = 'Please enter your name, a valid email, and a message.';
-        $contactType = 'error';
-    } elseif (!sd_rate_allow($conn, 'contact:' . client_ip(), 5, 900)) {
-        // Stops one visitor from flooding the clinic inbox.
-        $contactMessage = 'You have sent several messages already. Please wait a few minutes before sending another.';
         $contactType = 'error';
     } else {
         $st = $conn->prepare('INSERT INTO contact_messages(name,email,phone,subject,message) VALUES(?,?,?,?,?)');

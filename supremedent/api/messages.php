@@ -74,15 +74,6 @@ try {
         $person = $st->get_result()->fetch_assoc();
         $st->close();
         if (!$person) msg_json(['ok' => false, 'message' => 'Conversation not found.'], 404);
-        // Only open people this user may write to, or already has a conversation with (no browsing other accounts by ID).
-        if (!in_array($person['role'], msg_allowed_roles($role), true)) {
-            $st = $conn->prepare('SELECT 1 FROM user_messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) LIMIT 1');
-            $st->bind_param('iiii', $uid, $other, $other, $uid);
-            $st->execute();
-            $known = $st->get_result()->num_rows > 0;
-            $st->close();
-            if (!$known) msg_json(['ok' => false, 'message' => 'Conversation not found.'], 404);
-        }
 
         // Opening the conversation marks the other person's messages as seen (read receipt for the sender).
         $st = $conn->prepare('UPDATE user_messages SET is_read = 1, read_at = COALESCE(read_at, NOW()) WHERE sender_id = ? AND recipient_id = ? AND is_read = 0');
@@ -146,7 +137,6 @@ try {
         $target = $st->get_result()->fetch_assoc();
         $st->close();
         if (!$target || !in_array($target['role'], msg_allowed_roles($role), true)) msg_json(['ok' => false, 'message' => 'That recipient is not available.'], 403);
-        if (!sd_rate_allow($conn, 'message_send:' . $uid, 40, 600)) msg_json(['ok' => false, 'message' => 'You are sending messages too quickly. Please wait a few minutes.'], 429);
 
         $st = $conn->prepare('INSERT INTO user_messages (sender_id, recipient_id, subject, message) VALUES (?, ?, ?, ?)');
         $st->bind_param('iiss', $uid, $recipient, $subject, $body);

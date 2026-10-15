@@ -37,16 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $type = 'error';
         } else {
             $hash = password_hash($new, PASSWORD_DEFAULT);
-            $st = $conn->prepare('UPDATE users SET password=?,must_change_password=0,password_changed_at=NOW() WHERE id=?');
+            $st = $conn->prepare('UPDATE users SET password=? WHERE id=?');
             $st->bind_param('si', $hash, $uid);
             $st->execute();
             $st->close();
             session_regenerate_id(true);
             $_SESSION['session_regenerated_at'] = time();
-            // Keeps this session signed in; every other session of this account is signed out.
-            $_SESSION['auth_fp'] = sd_auth_fingerprint($hash);
             log_activity($conn, $uid, 'Password changed', 'Security', 'Patient changed password from profile.');
-            $msg = 'Password changed successfully. Other devices signed in to your account were signed out.';
+            $msg = 'Password changed successfully.';
             $type = 'success';
         }
     }

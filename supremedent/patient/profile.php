@@ -4,7 +4,6 @@ start_secure_session();
 require_once __DIR__ . '/../config/database.php';
 require_portal_role($conn, 'patient', false);
 require_once __DIR__ . '/../config/sms.php';
-require_once __DIR__ . '/../config/mail.php';
 
 $userId = (int) $_SESSION['user_id'];
 $message = '';
@@ -22,22 +21,10 @@ if (!$user) {
 
 $profile = patient_profile_data($conn, $userId);
 
-function patient_password_ok(mysqli $conn, int $userId, string $password): bool
-{
-    $st = $conn->prepare('SELECT password FROM users WHERE id=? LIMIT 1');
-    $st->bind_param('i', $userId);
-    $st->execute();
-    $hash = (string) ($st->get_result()->fetch_assoc()['password'] ?? '');
-    $st->close();
-    return $password !== '' && $hash !== '' && password_verify($password, $hash);
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = trim($_POST['first_name'] ?? '');
     $lastName = trim($_POST['last_name'] ?? '');
-    $email = strtolower(trim($_POST['email'] ?? ''));
-    $emailChanged = $email !== strtolower((string) $user['email']);
-    $currentPassword = (string) ($_POST['current_password'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $phoneInput = trim($_POST['phone'] ?? '');
     $address = trim($_POST['address'] ?? '');
     $birthday = trim($_POST['birthday'] ?? '');
@@ -53,13 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($firstName === '' || $lastName === '' || $email === '' || $phoneInput === '' || $address === '' || $birthday === '' || $gender === '') {
         $message = 'Please complete all required profile fields before booking an appointment.';
         $messageType = 'error';
-    } elseif (!valid_email_address($email)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = 'Please enter a valid email address.';
-        $messageType = 'error';
-    } elseif ($emailChanged && !patient_password_ok($conn, $userId, $currentPassword)) {
-        // The sign-in email can only be changed by someone who knows the password (protects against session theft).
-        usleep(250000);
-        $message = 'Enter your current password to change your email address.';
         $messageType = 'error';
     } elseif (!$normalizedPhone) {
         $message = 'Please enter a valid Philippine mobile number, for example 09171234567.';
@@ -100,11 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st->close();
 
                 $conn->commit();
-                if ($emailChanged) {
-                    log_activity($conn, $userId, 'Sign-in email changed', 'Security', 'From ' . $user['email'] . ' to ' . $email);
-                    sendSecurityNoticeEmail((string) $user['email'], $firstName, 'Your SupremeDent sign-in email was changed',
-                        'The sign-in email of your SupremeDent patient account was changed to ' . $email . ' on ' . date('M d, Y h:i A') . '.');
-                }
                 $_SESSION['first_name'] = $firstName;
                 $_SESSION['last_name'] = $lastName;
                 $_SESSION['email'] = $email;
@@ -185,10 +162,8 @@ ui_sidebar('patient', 'profile.php');
                 required></div>
         <div class="field"><label>Last Name *</label><input name="last_name" value="<?= e($user['last_name']) ?>"
                 required></div>
-        <div class="field"><label>Email Address *</label><input type="email" name="email" id="profileEmail" maxlength="150" value="<?= e($user['email']) ?>"
-                data-original="<?= e($user['email']) ?>" required></div>
-        <div class="field" id="emailPasswordField" hidden><label for="emailCurrentPassword">Current Password * <small>(needed to change your email)</small></label><input type="password"
-                id="emailCurrentPassword" name="current_password" maxlength="128" autocomplete="current-password"></div>
+        <div class="field"><label>Email Address *</label><input type="email" name="email" value="<?= e($user['email']) ?>"
+                required></div>
         <div class="field">
             <label for="phone">Contact Number *</label>
             <div class="phone-verify-row" id="phoneVerifyRow" data-verified-phone="<?= e($verifiedPhoneValue) ?>">
@@ -229,13 +204,6 @@ ui_sidebar('patient', 'profile.php');
                 Profile</button><?php if ($complete): ?><a class="btn btn-secondary" href="appointments.php"><i
                         class="fa-solid fa-calendar-plus"></i> Book Appointment</a><?php endif; ?></div>
     </form>
-    <script>
-    (() => {
-        const email = document.getElementById('profileEmail'), box = document.getElementById('emailPasswordField'), pw = document.getElementById('emailCurrentPassword');
-        const sync = () => { const changed = email.value.trim().toLowerCase() !== email.dataset.original.toLowerCase(); box.hidden = !changed; pw.required = changed; };
-        email.addEventListener('input', sync); sync();
-    })();
-    </script>
 </section>
 
 <div class="sms-otp-modal" id="smsOtpModal" aria-hidden="true">

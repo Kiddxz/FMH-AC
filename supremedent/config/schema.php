@@ -139,34 +139,6 @@ function ensure_schema(mysqli $conn): void {
         if (!$failed) @$conn->query("INSERT INTO clinic_settings (setting_key,setting_value) VALUES ('schema_revision','2') ON DUPLICATE KEY UPDATE setting_value='2'");
     }
 
-    // Revision 3 (2026-10-14): security hardening and dentist-to-patient record sharing.
-    if ($schemaRevision < 3) {
-        $revision3 = [
-            "CREATE TABLE IF NOT EXISTS rate_limits (bucket VARCHAR(190) NOT NULL PRIMARY KEY, hits INT UNSIGNED NOT NULL DEFAULT 0, window_start INT UNSIGNED NOT NULL DEFAULT 0, INDEX(window_start)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password TINYINT(1) NOT NULL DEFAULT 0",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at DATETIME NULL",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at DATETIME NULL",
-            "ALTER TABLE auth_otps MODIFY COLUMN purpose ENUM('signup','login','reset','register','setup') NOT NULL",
-            "ALTER TABLE notifications MODIFY COLUMN type ENUM('appointment','treatment','announcement','general','record') DEFAULT 'general'",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS dentist_id INT NULL",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS chart_id INT NULL",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS appointment_id INT NULL",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS tooth_number VARCHAR(160) NULL",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS source VARCHAR(20) NOT NULL DEFAULT 'manual'",
-            "ALTER TABLE dental_records ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP",
-            "ALTER TABLE dental_records ADD INDEX IF NOT EXISTS idx_dental_records_chart (chart_id)",
-            "ALTER TABLE dental_records ADD INDEX IF NOT EXISTS idx_dental_records_appointment (appointment_id)",
-            "CREATE TABLE IF NOT EXISTS patient_hidden_records (patient_id INT NOT NULL, record_id INT NOT NULL, hidden_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(patient_id,record_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
-            "INSERT IGNORE INTO clinic_settings (setting_key,setting_value) VALUES ('login_otp_roles','superadmin')",
-        ];
-        $failed = false;
-        foreach ($revision3 as $q) {
-            try { if (@$conn->query($q) === false) $failed = true; }
-            catch (Throwable $e) { $failed = true; error_log('[SupremeDent schema] ' . $e->getMessage()); }
-        }
-        if (!$failed) @$conn->query("INSERT INTO clinic_settings (setting_key,setting_value) VALUES ('schema_revision','3') ON DUPLICATE KEY UPDATE setting_value='3'");
-    }
-
     $defaults = [
       ['clinic_name','SupremeDent Dental Services'],['clinic_phone',''],['clinic_email',''],['clinic_address',''],['clinic_hours','Monday - Saturday | By appointment'],
       ['appointment_start_time','09:00'],['appointment_end_time','18:00'],['appointment_slot_minutes','30'],['booking_lead_hours','3'],['laboratory_enabled','0']
@@ -183,16 +155,13 @@ function ensure_schema(mysqli $conn): void {
 
 }
 function log_activity(mysqli $conn, ?int $userId, string $action, string $module='', string $details=''): void {
-    $ip = substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45);
-    $action = mb_substr($action, 0, 120);
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
     $stmt = $conn->prepare("INSERT INTO activity_logs (user_id,action,module,details,ip_address) VALUES (?,?,?,?,?)");
     if ($stmt) { $stmt->bind_param('issss',$userId,$action,$module,$details,$ip); $stmt->execute(); $stmt->close(); }
 }
-/** Legacy helper kept for old pages: always delegates to the database-backed portal guard. */
 function require_role(array $roles): void {
-    global $conn;
-    require_once __DIR__ . '/security.php';
-    require_portal_role($conn, $roles, false);
+    if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', $roles, true)) { header('Location: ../auth/login.php'); exit; }
 }
 function e($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 

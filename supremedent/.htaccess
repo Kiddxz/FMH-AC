@@ -1,13 +1,10 @@
 Options -Indexes
 
-# Never serve database dumps, logs, notes, environment/config backups, certificates or old PHP copies.
-<FilesMatch "(?i)\.(sql|log|ini|env|bak|old|txt|md|example|pem|dist|swp)$">
+# Never serve database dumps, logs, environment/config backups, or old PHP copies.
+<FilesMatch "(?i)\.(sql|log|ini|env|bak|old)$">
     Require all denied
 </FilesMatch>
 <FilesMatch "(?i)(?:_original|_backup)\.php$">
-    Require all denied
-</FilesMatch>
-<FilesMatch "^\.">
     Require all denied
 </FilesMatch>
 
@@ -15,6 +12,4 @@ Options -Indexes
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-    Header always unset X-Powered-By
 </IfModule>

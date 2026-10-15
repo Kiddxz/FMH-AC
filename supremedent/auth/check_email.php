@@ -13,11 +13,6 @@ try {
     }
     session_write_close();
     require_once __DIR__ . '/../config/database.php';
-    // Limits how many addresses one network can test, so this cannot be used to harvest registered emails.
-    if (!sd_rate_allow($conn, 'check_email:' . client_ip(), 30, 600)) {
-        echo json_encode(['ok' => true, 'valid' => true, 'available' => true, 'limited' => true]);
-        exit;
-    }
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     if (!valid_email_address($email)) {
         echo json_encode(['ok' => true, 'valid' => false, 'available' => false]);
