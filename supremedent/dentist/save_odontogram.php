@@ -87,10 +87,6 @@ $dentistId =
 |--------------------------------------------------------------------------
 */
 
-$condition = mb_substr($condition, 0, 100);
-$treatment = mb_substr($treatment, 0, 150);
-$notes = mb_substr($notes, 0, 2000);
-
 if ($patientId <= 0) {
 
     echo json_encode([
@@ -218,7 +214,7 @@ if (!$stmt) {
     echo json_encode([
         "success" => false,
         "message" =>
-            "Unable to save odontogram record."
+            "Database error: " . $conn->error
     ]);
 
     exit;
@@ -269,27 +265,9 @@ try {
 
 
     $conn->commit();
-    $stmt->close();
 
-    // Share the update with the patient (Dental Records + notification).
-    $savedTeeth = array_values(array_unique(array_filter(array_map('intval', $teeth), static fn($t) => $t >= 1 && $t <= 32)));
-    sort($savedTeeth);
-    if ($savedTeeth) {
-        require_once __DIR__ . '/../includes/patient_records.php';
-        try {
-            sd_share_record_with_patient($conn, [
-                'patient_id' => $patientId,
-                'dentist_id' => $dentistId,
-                'procedure_name' => $treatment !== '' ? $treatment : '3D Odontogram Update',
-                'diagnosis' => trim(($condition !== '' ? $condition . ' · ' : '') . 'Teeth #' . implode(', #', $savedTeeth) . ' (universal numbering)'),
-                'notes' => $notes,
-                'source' => 'odontogram',
-            ]);
-            log_activity($conn, $dentistId, 'Saved odontogram', 'Dental Records', 'Patient #' . $patientId);
-        } catch (Throwable $e) {
-            error_log('[SupremeDent odontogram share] ' . $e->getMessage());
-        }
-    }
+
+    $stmt->close();
 
 
     echo json_encode([

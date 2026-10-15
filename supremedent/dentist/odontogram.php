@@ -786,10 +786,10 @@ if ($tableCheck && $tableCheck->num_rows > 0) {
 
 
             <a
-                href="patients.php"
+                href="dental_management.php"
                 class="active"
             >
-                🦷 Patients
+                🦷 Dental Management
             </a>
 
 

@@ -4,7 +4,6 @@
  * Expects $editorRole ('assistant'|'dentist'), $conn and a verified session.
  */
 require_once __DIR__ . '/exam_record.php';
-require_once __DIR__ . '/patient_records.php';
 $editorRole = $editorRole === 'dentist' ? 'dentist' : 'assistant';
 $userId = (int)$_SESSION['user_id'];
 $listUrl = $editorRole === 'dentist' ? 'dental_charts.php' : 'charts.php';
@@ -15,8 +14,6 @@ $marked = [];
 if ($chartId) {
     $stmt = $conn->prepare('SELECT * FROM dental_charts WHERE id = ? LIMIT 1'); $stmt->bind_param('i', $chartId); $stmt->execute(); $found = $stmt->get_result()->fetch_assoc(); $stmt->close();
     if (!$found) { header('Location: ' . $listUrl); exit; }
-    // Assistants only prepare charts; once a dentist has confirmed a chart it is a clinical record only a dentist edits.
-    if ($editorRole === 'assistant' && (($found['created_role'] ?? '') !== 'assistant' || !empty($found['dentist_id']))) { header('Location: ' . $listUrl . '?locked=1'); exit; }
     $chart = $found;
     $stmt = $conn->prepare('SELECT tooth_number, condition_name FROM dental_chart_teeth WHERE chart_id = ?'); $stmt->bind_param('i', $chartId); $stmt->execute(); $teeth = $stmt->get_result(); while ($row = $teeth->fetch_assoc()) { $marked[$row['tooth_number']] = $row['condition_name']; } $stmt->close();
 }
@@ -40,18 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute(); if (!$chartId) $chartId = $conn->insert_id; $stmt->close();
             $stmt = $conn->prepare('DELETE FROM dental_chart_teeth WHERE chart_id = ?'); $stmt->bind_param('i', $chartId); $stmt->execute(); $stmt->close();
             if ($teeth) { $stmt = $conn->prepare('INSERT INTO dental_chart_teeth (chart_id, tooth_number, condition_name) VALUES (?, ?, ?)'); foreach ($teeth as $tooth => $condition) { if (preg_match('/^[1-8][1-8]$/', (string)$tooth) && in_array($condition, ['Healthy','Caries','Filled','Missing','Fractured'], true)) { $stmt->bind_param('iss', $chartId, $tooth, $condition); $stmt->execute(); } } $stmt->close(); }
-            $conn->commit();
-            if ($editorRole === 'dentist') {
-                // The dentist's saved chart goes straight to the patient's Dental Records, with a notification.
-                try { sd_share_chart_with_patient($conn, (int)$chartId, $userId); }
-                catch (Throwable $e) { error_log('[SupremeDent chart share] ' . $e->getMessage()); }
-                log_activity($conn, $userId, 'Saved dental chart', 'Dental Charts', 'Chart #' . $chartId . ' · patient #' . $patientId);
-            } else {
-                $pname = sd_user_full_name($conn, $patientId);
-                sd_notify_staff($conn, ['dentist'], [], 'Chart ready for review · ' . $pname, 'An assistant prepared a dental chart for ' . $pname . '. Open Dental Charts to review and confirm it.', null, $patientId, $userId, 'chart');
-                log_activity($conn, $userId, 'Prepared dental chart', 'Dental Charts', 'Chart #' . $chartId . ' · patient #' . $patientId);
-            }
-            header('Location: ' . $listUrl . '?saved=1'); exit;
+            $conn->commit(); header('Location: ' . $listUrl . '?saved=1'); exit;
         } catch (Throwable $e) { $conn->rollback(); $error = 'The chart could not be saved. Please try again.'; }
     }
     // Keep what was typed when validation fails.

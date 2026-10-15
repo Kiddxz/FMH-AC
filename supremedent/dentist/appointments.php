@@ -4,7 +4,6 @@ start_secure_session();
 require_once __DIR__ . '/../config/database.php';
 require_portal_role($conn, 'dentist', false);
 require_once __DIR__ . '/../includes/appointment_helpers.php';
-require_once __DIR__ . '/../includes/patient_records.php';
 
 
 $uid = (int) $_SESSION['user_id'];
@@ -18,9 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
         if ($action === 'complete') {
             $id = (int) ($_POST['appointment_id'] ?? 0);
-            // Unassigned bookings are taken by the dentist who completes them; the visit is saved to the patient's records.
-            $changed = sd_complete_appointment($conn, $id, $uid, mb_substr((string) ($_POST['visit_notes'] ?? ''), 0, 2000), (string) ($_POST['visit_teeth'] ?? ''), mb_substr((string) ($_POST['visit_diagnosis'] ?? ''), 0, 255));
-            $msg = $changed ? 'Appointment marked completed and saved to the patient\'s Dental Records.' : 'Only your approved (or unassigned) appointments can be completed.';
+            // Unassigned bookings are taken by the dentist who completes them.
+            $st = $conn->prepare("UPDATE appointments SET status='completed', dentist_id=COALESCE(dentist_id, ?) WHERE id=? AND (dentist_id=? OR dentist_id IS NULL) AND status='approved'");
+            $st->bind_param('iii', $uid, $id, $uid);
+            $st->execute();
+            $changed = $st->affected_rows;
+            $st->close();
+            $msg = $changed ? 'Appointment marked completed.' : 'Only your approved (or unassigned) appointments can be completed.';
             $type = $changed ? 'success' : 'error';
         } elseif ($action === 'cancel') {
             [$ok, $text] = sd_cancel_appointment($conn, (int) ($_POST['appointment_id'] ?? 0), $uid, 'dentist', (string) ($_POST['cancel_reason'] ?? ''));

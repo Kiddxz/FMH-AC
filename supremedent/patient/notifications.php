@@ -31,11 +31,7 @@ $unread = 0;
 foreach ($rows as $r) {
     if (!(int) $r['is_read']) $unread++;
     $appointment = $r['a_id'] ? sd_appointment_view_data(['id' => $r['a_id']] + $r) : null;
-    $links = ['appointment' => ['appointments.php', 'View in My Appointments'], 'treatment' => ['treatment_plans.php', 'View My Treatment Plans'], 'record' => ['dental_records.php', 'View My Dental Records']];
-    [$link, $label] = $links[$r['type']] ?? [null, null];
-    // Record notifications always open Dental Records, even when they came from an appointment.
-    if ($r['type'] === 'record') $items[] = $r + ['appointment' => null, 'link' => $link, 'link_label' => $label];
-    else $items[] = $r + ['appointment' => $appointment, 'link' => $appointment ? null : $link, 'link_label' => $appointment ? null : $label];
+    $items[] = $r + ['appointment' => $appointment, 'link' => $appointment ? null : ($r['type'] === 'appointment' ? 'appointments.php' : ($r['type'] === 'treatment' ? 'treatment_plans.php' : null))];
 }
 require '../includes/ui.php';
 ui_header('Notifications', 'patient');

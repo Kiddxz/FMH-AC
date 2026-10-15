@@ -7,7 +7,7 @@ require_portal_role($conn, 'patient', false);
 $uid = (int) $_SESSION['user_id'];
 require_once '../includes/patient_record_visibility.php';
 [$hidingEnabled,$hideWarning]=patient_record_visibility($conn,$uid);
-$sql='SELECT d.id,d.record_date,d.procedure_name,d.diagnosis,d.dentist_name,d.notes,d.tooth_number,d.chart_id,d.source FROM dental_records d';
+$sql='SELECT d.id,d.record_date,d.procedure_name,d.diagnosis,d.dentist_name,d.notes FROM dental_records d';
 if($hidingEnabled)$sql.=' LEFT JOIN patient_hidden_records h ON h.record_id=d.id AND h.patient_id=? WHERE d.patient_id=? AND h.record_id IS NULL';
 else $sql.=' WHERE d.patient_id=?';
 $sql.=' ORDER BY d.record_date DESC,d.id DESC';
