@@ -1,3 +1,0 @@
-# The Super Admin setup tool only answers on the server computer itself (index.php checks this too).
-Options -Indexes
-Require local

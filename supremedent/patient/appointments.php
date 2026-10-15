@@ -195,9 +195,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$a) {
             $fail('Appointment not found.');
         }
-        // Bookings are approved automatically, so any active upcoming appointment can be moved.
-        elseif (!in_array($a['status'], ['pending', 'approved'], true) || strtotime($a['appointment_date'] . ' ' . $a['appointment_time']) < time()) {
-            $fail('Only upcoming active appointments can be rescheduled.');
+        // Approved appointments are locked; only pending requests can move.
+        elseif ($a['status'] !== 'pending') {
+            $fail('Only pending appointments can be rescheduled. Cancel this appointment and book a new one instead.');
         } elseif (!valid_slot_request($d, $t, $slots, $leadSeconds)) {
             $fail('Choose a valid available schedule at least ' . $slotConfig['lead_hours'] . ' hours from now.');
         } elseif (!slot_lock($conn, $d, $t)) {
@@ -206,28 +206,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             slot_unlock($conn, $d, $t);
             $fail('Sorry, that time was just booked by another patient. Please choose another time slot.');
         } else {
-            // Keep the same dentist when they are free at the new time, otherwise give it to a free dentist.
-            $oldDentist = (int) ($a['dentist_id'] ?? 0);
-            $dentistId = ($oldDentist && sd_dentist_free($conn, $oldDentist, $d, $t, $id)) ? $oldDentist : sd_pick_dentist($conn, $d, $t, $id);
-            $st = $conn->prepare("UPDATE appointments SET appointment_date=?,appointment_time=?,dentist_id=? WHERE id=? AND patient_id=? AND status IN ('pending','approved')");
-            $st->bind_param('ssiii', $d, $t, $dentistId, $id, $uid);
+            $st = $conn->prepare("UPDATE appointments SET appointment_date=?,appointment_time=?,dentist_id=NULL WHERE id=? AND patient_id=? AND status='pending'");
+            $st->bind_param('ssii', $d, $t, $id, $uid);
             $st->execute();
-            $moved = $st->affected_rows === 1;
             $st->close();
             slot_unlock($conn, $d, $t);
-            if (!$moved) {
-                $fail('This appointment was already updated. Refresh and try again.');
-            } else {
-                $newWhen = date('M d, Y', strtotime($d)) . ' at ' . date('h:i A', strtotime($t));
-                $oldWhen = sd_appointment_when($a);
-                sd_notify_patient($conn, $uid, 'Appointment Rescheduled', 'Your ' . $a['appointment_type'] . ' appointment was moved from ' . $oldWhen . ' to ' . $newWhen . '.', 'appointment', $id);
-                $patientName = trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? ''));
-                sd_notify_staff($conn, ['assistant'], array_filter([$oldDentist, (int) $dentistId]), 'Appointment rescheduled · ' . $patientName,
-                    $patientName . ' moved ' . $a['appointment_type'] . ' from ' . $oldWhen . ' to ' . $newWhen . '.', $id, $uid, $uid);
-                log_activity($conn, $uid, 'Rescheduled appointment', 'Appointments', 'Appointment #' . $id);
-                header('Location: appointments.php?done=rescheduled');
-                exit;
-            }
+            sd_notify_patient($conn, $uid, 'Appointment Rescheduled', 'Your pending appointment was moved to ' . date('M d, Y', strtotime($d)) . ' at ' . date('h:i A', strtotime($t)) . '.', 'appointment', $id);
+            header('Location: appointments.php?done=rescheduled');
+            exit;
         }
     }
 }
@@ -307,7 +293,7 @@ ui_sidebar('patient', 'appointments.php');
                     <?php foreach ($all as $a):
                         $future = strtotime($a['appointment_date'] . ' ' . $a['appointment_time']) >= $now;
                         $active = in_array($a['status'], ['pending', 'approved'], true);
-                        $canMove = $active && $future;
+                        $canMove = $a['status'] === 'pending' && $future;
                         $canCancel = $active && $future; ?>
                         <tr class="<?= $future && $active ? '' : 'is-past' ?>">
                             <td data-label="Date &amp; Time">
