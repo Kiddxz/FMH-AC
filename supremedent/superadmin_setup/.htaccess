@@ -1,0 +1,8 @@
+# Super Admin backup tool: only the server computer itself may open this folder.
+Options -Indexes
+Require local
+
+# The settings and notes are never served to a browser.
+<FilesMatch "^(setup_config\.php|README\.txt)$">
+    Require all denied
+</FilesMatch>
