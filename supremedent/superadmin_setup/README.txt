@@ -7,7 +7,7 @@ What it does
 
 How to use (on the XAMPP computer itself)
   1. Open superadmin_setup/setup_config.php with Notepad.
-  2. Put a long secret key in 'setup_key' (24+ characters). Opening
+  2. Put a secret key of at least 24 characters in 'setup_key'. Opening
      http://localhost/supremedent/superadmin_setup/ while it is locked shows a random key you can copy.
   3. Save, then open http://localhost/supremedent/superadmin_setup/
   4. Enter the setup key, the admin's first name, last name, email and a 12+ character password

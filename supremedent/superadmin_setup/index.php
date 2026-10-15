@@ -181,7 +181,21 @@ if (!$locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
             session_regenerate_id(true);
             if ($ok) { $createdEmail = $text; $step = 'done'; } else { $message = $text; $step = 'form'; }
         } else {
-            $message = 'That code is incorrect or expired. Check the newest email from SupremeDent, or start again.';
+            // A double-click sends the code twice: the first request already created the account. Matching this
+            // session's own password hash shows "done" for that case only, never for anyone else's account.
+            $st = $conn->prepare("SELECT id FROM users WHERE email=? AND role='superadmin' AND password=? LIMIT 1");
+            $st->bind_param('ss', $pending['email'], $pending['hash']);
+            $st->execute();
+            $alreadyCreated = $st->get_result()->num_rows > 0;
+            $st->close();
+            if ($alreadyCreated) {
+                $createdEmail = (string)$pending['email'];
+                unset($_SESSION['sa_setup_pending']);
+                $pending = null;
+                $step = 'done';
+            } else {
+                $message = 'That code is incorrect or expired. Check the newest email from SupremeDent, or start again.';
+            }
         }
     }
 }
@@ -213,10 +227,11 @@ $suggestedKey = $locked ? bin2hex(random_bytes(24)) : '';
 
 <?php if ($locked): ?>
 <p class="auth-kicker">The backup tool is locked</p>
+<?php if ($setupKey !== ''): ?><div class="auth-message is-error" style="display:block" role="alert">The setup key in setup_config.php is too short (<?= strlen($setupKey) ?> characters). Use at least <?= SA_SETUP_KEY_MIN ?> characters, for example the key below.</div><?php endif; ?>
 <p class="muted">To unlock it, the person in charge of the clinic computer must set a secret setup key:</p>
 <ol class="sa-steps">
 <li>Open <b>superadmin_setup/setup_config.php</b> in a text editor (for example Notepad).</li>
-<li>Put a long random key in <b>'setup_key'</b>. You can use this one, generated just now:<code class="sa-code"><?= e($suggestedKey) ?></code></li>
+<li>Put a random key of at least <?= SA_SETUP_KEY_MIN ?> characters in <b>'setup_key'</b>. You can use this one, generated just now:<code class="sa-code"><?= e($suggestedKey) ?></code></li>
 <li>Save the file and reload this page. Keep the key private.</li>
 </ol>
 <p class="muted">When you are done, set <b>'setup_key'</b> back to <b>''</b> to lock the tool again.</p>
@@ -249,5 +264,10 @@ $suggestedKey = $locked ? bin2hex(random_bytes(24)) : '';
 <ul class="sa-admins" aria-label="Super Admin accounts"><li><b>Super Admin accounts (<?= count($superAdmins) ?>)</b></li><?php foreach ($superAdmins as $a): ?><li><?= e($a['first_name'] . ' ' . $a['last_name']) ?> · <?= e($a['email']) ?><?= $a['status'] !== 'active' ? ' · inactive' : '' ?></li><?php endforeach; ?></ul>
 <?php endif; ?>
 </div></main></div></div>
-<script>document.getElementById('otp')?.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6)});</script>
+<script>
+document.getElementById('otp')?.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6)});
+// Sending the email takes a few seconds; stop a second click from submitting the same step twice.
+document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',()=>f.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=true)));
+window.addEventListener('pageshow',()=>document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false));
+</script>
 </body></html>
