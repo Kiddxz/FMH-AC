@@ -61,6 +61,14 @@ DENTIST
   under each bar), Weekly summary table, and the matching records. Report types: Appointments,
   Treatment Plans, Dental Charts, Dental Records (Laboratory when it is enabled). Print is available.
 
+FIX: PAGES STUCK LOADING
+- Every page used to run ALTER TABLE statements on each load. When another connection held a table
+  (phpMyAdmin, an earlier request that did not finish, an old tab still refreshing), MariaDB made the page
+  wait for the lock with a very long timeout, so the site kept loading and never opened.
+- Now the upgrade runs only once (then pages just read schema_revision), one request at a time, and gives up
+  after a few seconds if a table is busy (it finishes on a later page load). Pages also never wait more than
+  15 seconds for a table lock.
+
 DATABASE (automatic)
 - users.patient_no (unique clinic number), users.must_change_password
 - appointments.source ('online' / 'walkin'), appointments.walkin_status, appointments.created_by
