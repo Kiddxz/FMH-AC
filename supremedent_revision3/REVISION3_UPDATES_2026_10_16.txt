@@ -1,0 +1,79 @@
+SUPREMEDENT — REVISION 3 (2026-10-16)
+Based on "Updated - for revision.docx". Database changes are applied automatically the first time any page
+loads (config/schema.php, tracked by clinic_settings.schema_revision = 3). REVISION3_UPGRADE_2026_10_16.sql
+contains the same changes if you prefer to run them in phpMyAdmin. No data is deleted.
+
+PATIENT
+- Dashboard > My Calendar: past dates are light gray, only today is green. The day panel shows about
+  5 appointments; the rest scroll inside the box.
+- Appointments: the list shows about 6 appointments and scrolls for the rest.
+- Booking calendar: today stays open. Times that already passed are gray ("Passed") and cannot be picked;
+  they close by themselves while the pop-up is open. (The 3-hour booking cutoff was set to 0; the super
+  admin can still change "Booking Cutoff / Lead Time" in Website Content.)
+- "Fully booked" days are now amber so they no longer look like the red "Sunday closed".
+- Cancelling an appointment opens that time again right away for every patient.
+- Dental details: "Save Marked Teeth" was removed — clicked teeth are saved automatically. "Clear All" stays.
+  Dental Service, Reason / Concern and at least one marked tooth are all required; otherwise
+  "Please complete the following before booking: ..." is shown (also checked on the server).
+- Dental Records: stat cards + "Dental Record History" (date & time, service, dentist, View). View opens the
+  full Dental Chart (chart details, 3D model, dental health status, oral health condition, tooth count,
+  soft tissue / periodontal / occlusion exams, recommendations, clinical notes) without the empty gap.
+- Treatment History: lists the treatment plans with "Removable" and "Fixed" buttons. They open the
+  Removable / Fixed Restoration Plan (read-only) with "Print" — choose "Save as PDF" in the print window.
+- "Treatment Plans" was removed from the patient sidebar (old links go to Treatment History).
+- Accounts created with Register Patient must change the temporary password on first sign-in
+  (a pop-up that cannot be closed until the new password is saved).
+
+ASSISTANT
+- Appointments > Appointment Requests: "Online Bookings" and "Walk-in" tabs, newest date first, about
+  6 rows visible with scrolling. The Walk-in tab has "Add Walk-in" (patient, arrival date/time, service,
+  dentist optional, Waiting / In chair). Walk-in status and dentist can be changed from View.
+- View pop-up: date, time, service, dentist, reason and marked teeth on the left, the 3D odontogram on the
+  right. "Full Details & 3D Model" and "Cancel Appointment" were removed from the pop-up.
+- The "Register Walk-in Appointment" and "Staff Availability" panels were removed.
+- Patients: patient numbers are shown as 000001, 000002, ... (assigned in registration order) and the most
+  recently updated patient is listed first. Search also accepts the patient number.
+- Patients > View: tabs "Dental Record" (charts > View > full chart), "Treatment Plan Record"
+  (plans > Removable / Fixed > records > View > plan with Print/PDF) and "Appointment Record".
+- New "Treatment Plans" menu (same as the dentist's): create Removable / Fixed restoration plans, choose the
+  dentist and the treatment plan (new or existing), view / edit / print plans.
+- Fixed plans: any number of Metal Designs and Pontic Designs can be selected (dentist and assistant).
+- 3D model background for restoration plans is #4b4c50.
+- Create Chart: the condition bar (Caries / Filled / Missing / Fractured) above the chart was removed.
+  Click a tooth on the chart or the 3D model and choose its condition from the small menu at the tooth
+  (or "Clear mark"). Time and Service fields were added so records show the service.
+- Register Patient: Birthday is required and must be 16 years or older (the date picker stops at that date);
+  Age is calculated automatically. Gender is required.
+- The appointment calendar uses the new layout (see Dentist).
+
+DENTIST
+- After signing in, a "Today's schedule" pop-up lists today's and the next clinic day's patients
+  (Open chart, Close, Open calendar, "Don't show again today").
+- Appointments: new calendar (legend, past days gray, TODAY marker, patient count per day, busy days with
+  10+ patients in amber). "Appointment Requests" button opens the request list (same as the assistant's,
+  newest first, scrolling). The request table under the calendar was removed.
+- Patients: same as the assistant (000001 numbers, newest first, View with the three record tabs).
+- Treatment Plans: Removable / Fixed with multiple metal and pontic designs, 3D background #4b4c50.
+- Dental Charts: the Delete button was removed and patients without a chart are no longer listed
+  (a patient appears after the first chart is created with "Create Chart").
+- "Patient History" was removed from the sidebar (old links go to Patients).
+- Reports: This week / Last week / Change cards, weekly bar chart (last 8 weeks by default, with the change
+  under each bar), Weekly summary table, and the matching records. Report types: Appointments,
+  Treatment Plans, Dental Charts, Dental Records (Laboratory when it is enabled). Print is available.
+
+DATABASE (automatic)
+- users.patient_no (unique clinic number), users.must_change_password
+- appointments.source ('online' / 'walkin'), appointments.walkin_status, appointments.created_by
+- dental_charts.chart_time, dental_charts.service
+- restoration_orders.metal_design / pontic_design are TEXT (JSON lists of designs; older single values still
+  work), restoration_orders.created_by, restoration_orders.created_role
+- clinic_settings.booking_lead_hours = 0
+
+NEW FILES
+assets/css/revision3_2026_10.css, patient/record_view.php, assistant/patient_record.php,
+assistant/treatment_plans.php, assistant/restoration_form.php, assistant/restoration_view.php,
+dentist/patient_record.php, includes/record_helpers.php, includes/chart_detail_view.php,
+includes/restoration_options.php, includes/restoration_detail_view.php, includes/restoration_form_body.php,
+includes/restoration_view_page.php, includes/treatment_plans_body.php, includes/patients_list_body.php,
+includes/patient_record_page.php, includes/appointment_requests.php, includes/force_password_modal.php,
+includes/dentist_schedule_popup.php, REVISION3_UPGRADE_2026_10_16.sql
