@@ -38,10 +38,15 @@
     /* top bar: logo ... bell, Menu */
     .panel-bar { flex-wrap: wrap; column-gap: 8px; padding: 0 16px !important; }
     .panel-bar .logo { font-size: 18px !important; white-space: nowrap; }
-    .panel-bar .nav-toggle, .app-header .nav-toggle { margin-left: 0; padding: 8px 12px; font-size: 14px; white-space: nowrap; }
+    /* the Menu button is only an icon on a phone: ☰ when closed, ✕ when open (the text stays for screen readers) */
+    .panel-bar .nav-toggle, .app-header .nav-toggle { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; margin-left: 0; padding: 0; border-radius: 10px; font-size: 0; line-height: 1; }
+    .panel-bar .nav-toggle::before, .app-header .nav-toggle::before { content: "\2630"; font-size: 20px; }
+    .panel-bar .nav-toggle[aria-expanded="true"]::before, .app-header .nav-toggle[aria-expanded="true"]::before { content: "\2715"; font-size: 18px; }
+    .panel-bar { flex-wrap: wrap; }
+    .panel-bar .logo, .app-header .logo { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .app-header { flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
     .app-header .logo { width: auto !important; font-size: 18px; text-align: left !important; white-space: nowrap; }
-    .app-header .nav-toggle { display: inline-block; order: 2; margin-left: auto; }
+    .app-header .nav-toggle { order: 2; margin-left: auto; }
     .portal-menu { display: none; order: 3; width: 100%; padding: 6px 0 4px; border-top: 1px solid #f1ebe3; }
     .app-header .app-nav { flex-direction: column; align-items: stretch; width: 100%; gap: 2px; }
     .app-header .app-nav a { padding: 11px 14px; font-size: 15px; text-align: left; }
@@ -59,6 +64,12 @@
     .panel-menu .user-menu-links .user-menu-item:hover, .portal-menu .user-menu-links .user-menu-item:hover { background: #fff5e8; }
     .panel-menu .user-menu-logout, .portal-menu .user-menu-logout { margin-top: 0; border-top: none !important; color: #b03a37 !important; }
     .panel-menu .user-menu-links .user-menu-logout:hover, .portal-menu .user-menu-links .user-menu-logout:hover { background: #fff1f1; }
+  }
+  /* very narrow phones: smaller logo so the logo, bell and Menu stay on one line */
+  @media (max-width: 380px) {
+    .panel-bar { column-gap: 4px; padding: 0 12px !important; }
+    .panel-bar .logo, .app-header .logo { font-size: 16px !important; }
+    .app-header { padding-left: 12px !important; padding-right: 12px !important; }
   }
 </style>
 <script>
