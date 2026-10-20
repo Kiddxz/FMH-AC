@@ -54,7 +54,7 @@
       @if ($transaction->status === 'void')
         <p style="text-align: center; color: #d9534f; font-weight: 700;">This bill was cancelled by the clinic. Please ask the cashier.</p>
       @elseif ($transaction->status === 'paid')
-        <p style="text-align: center; color: #287a43; font-weight: 700; font-size: 18px;">Fully paid. Thank you!</p>
+        <p style="text-align: center; color: #287a43; font-weight: 700; font-size: 18px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -3px; margin-right: 6px;"><path d="M20 6 9 17l-5-5"/></svg>Fully paid. Thank you!</p>
         <p style="text-align: center; color: #777; margin-top: 6px;">Please ask the cashier for your official receipt.</p>
       @elseif (! $enabled)
         <p style="text-align: center; color: #777;">Online payment is not available right now. Please pay at the cashier.</p>

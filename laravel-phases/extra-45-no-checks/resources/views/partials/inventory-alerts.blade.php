@@ -31,7 +31,7 @@
             <span class="stock-bar"><span style="width: {{ $item->reorder_level > 0 ? min(100, round($left / $item->reorder_level * 100)) : 0 }}%;"></span></span>
           </a>
         @empty
-          <p class="alert-none">None</p>
+          <p class="alert-none"><span style="color: #2e8b57;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 6px;"><path d="M20 6 9 17l-5-5"/></svg></span>None</p>
         @endforelse
       </div>
 
@@ -48,7 +48,7 @@
             </span>
           </a>
         @empty
-          <p class="alert-none">None</p>
+          <p class="alert-none"><span style="color: #2e8b57;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 6px;"><path d="M20 6 9 17l-5-5"/></svg></span>None</p>
         @endforelse
       </div>
 
@@ -64,7 +64,7 @@
             </span>
           </a>
         @empty
-          <p class="alert-none">None</p>
+          <p class="alert-none"><span style="color: #2e8b57;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 6px;"><path d="M20 6 9 17l-5-5"/></svg></span>None</p>
         @endforelse
       </div>
     </div>
