@@ -11,6 +11,8 @@
 <body class="@yield('body_class', 'dashboard-page') fmh-app">
     <header class="app-header">
         <h2 class="logo"><img src="{{ asset('image/fmh-logo-icon.png') }}" alt="" class="logo-mark" style="height: 1.6em; width: auto; vertical-align: middle; margin-right: 8px;">FMH Animal Clinic</h2>
+        <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="panelMenu">☰ Menu</button>
+        <div class="portal-menu" id="panelMenu">
         <nav class="app-nav">
             <a href="{{ route('portal.dashboard') }}" class="{{ request()->routeIs('portal.dashboard') ? 'active' : '' }}">
                 Dashboard
@@ -30,6 +32,7 @@
             </a>
         </nav>
         @include('partials.user-menu', ['profileRoute' => 'portal.profile'])
+        </div>
     </header>
     @include('partials.phase-notice')
     @if (session('status') || $errors->any())

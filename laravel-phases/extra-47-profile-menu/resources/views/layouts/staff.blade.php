@@ -14,6 +14,7 @@
     <header class="panel-header">
         <div class="panel-bar">
             <a href="{{ route('staff.dashboard') }}" class="logo"><img src="{{ asset('image/fmh-logo-icon.png') }}" alt="" class="logo-mark" style="height: 1.6em; width: auto; vertical-align: middle; margin-right: 8px;">FMH Animal Clinic</a>
+            <div class="panel-bell">@include('partials.inventory-bell', ['area' => 'staff'])</div>
             <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="panelMenu">☰ Menu</button>
             <div class="panel-menu" id="panelMenu">
                 <nav class="panel-nav" aria-label="Main menu">
@@ -28,7 +29,6 @@
                     <a href="{{ route('staff.reports.index') }}" class="{{ request()->routeIs('staff.reports.*') ? 'active' : '' }}">Reports</a>
                 </nav>
                 <div class="panel-user">
-                    @include('partials.inventory-bell', ['area' => 'staff'])
                     @include('partials.user-menu', ['profileRoute' => 'staff.profile', 'logoutRoute' => 'staff.logout'])
                 </div>
             </div>

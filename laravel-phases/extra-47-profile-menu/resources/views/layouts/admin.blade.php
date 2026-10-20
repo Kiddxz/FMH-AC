@@ -14,6 +14,7 @@
     <header class="panel-header">
         <div class="panel-bar">
             <a href="{{ route('admin.dashboard') }}" class="logo"><img src="{{ asset('image/fmh-logo-icon.png') }}" alt="" class="logo-mark" style="height: 1.6em; width: auto; vertical-align: middle; margin-right: 8px;">FMH Animal Clinic</a>
+            <div class="panel-bell">@include('partials.inventory-bell', ['area' => 'admin'])</div>
             <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="panelMenu">☰ Menu</button>
             <div class="panel-menu" id="panelMenu">
                 <nav class="panel-nav" aria-label="Main menu">
@@ -30,7 +31,6 @@
                     <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">Reports</a>
                 </nav>
                 <div class="panel-user">
-                    @include('partials.inventory-bell', ['area' => 'admin'])
                     @include('partials.user-menu', ['profileRoute' => 'admin.profile', 'logoutRoute' => 'admin.logout'])
                 </div>
             </div>

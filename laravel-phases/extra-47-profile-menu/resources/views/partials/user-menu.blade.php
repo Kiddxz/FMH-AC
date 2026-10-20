@@ -1,8 +1,8 @@
 {{-- Small round profile button (initials). Clicking it opens a box with the name, email and the Profile / Log out links.
      Use: @include('partials.user-menu', ['profileRoute' => 'admin.profile', 'logoutRoute' => 'admin.logout'])
      Without 'logoutRoute' (Pet Owner portal) "Log out" sends the log out form right away.
-     On a phone: inside the Staff / Admin / Super Admin "Menu" it is a profile card with two buttons;
-     in the Pet Owner portal the round button sits at the top right of the page. --}}
+     On a phone the top bar shows the bell and a "Menu" button; the opened Menu shows the user at the top,
+     the pages in the middle and Profile / Log out at the bottom. --}}
 @php
   $me = auth()->user();
   $initials = mb_strtoupper(mb_substr((string) $me->first_name, 0, 1) . mb_substr((string) $me->last_name, 0, 1)) ?: '?';
@@ -29,26 +29,36 @@
   .user-menu-box .user-menu-item svg { flex-shrink: 0; width: 18px; height: 18px; }
   .user-menu-logout { border-top: 1px solid #f1ebe3 !important; margin-top: 6px; }
 
-  @media (max-width: 900px) {
-    /* Staff / Admin / Super Admin: profile card inside the opened "Menu" */
-    .panel-user { position: relative; display: block !important; margin-top: 12px !important; padding: 0 !important; border-top: none !important; }
-    .panel-user .notif { position: absolute; top: 16px; right: 14px; z-index: 2; }
-    .panel-user .user-menu-btn { display: none; }
-    .panel-user .user-menu-box { position: static; display: block; width: 100%; padding: 0; border-radius: 14px; background: #fffdfa; box-shadow: none; }
-    .panel-user .user-menu-avatar { display: inline-flex; width: 46px; height: 46px; font-size: 16px; }
-    .panel-user .user-menu-head { padding: 14px 64px 14px 14px; }
-    .panel-user .user-menu-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 14px 14px; }
-    .panel-user .user-menu-box .user-menu-item { justify-content: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid #eee6db !important; border-radius: 10px; background: #fff; font-weight: 600; }
-    .panel-user .user-menu-box .user-menu-item.active { border-color: #e89427 !important; background: #fff1df; }
-    .panel-user .user-menu-logout { margin-top: 0; color: #b03a37 !important; }
-    .panel-user .user-menu-box .user-menu-logout:hover { background: #fff1f1; color: #b03a37 !important; }
+  /* the bell sits in the top bar, right before the round profile button (and before "Menu" on a phone) */
+  .panel-bell { order: 2; margin-left: auto; display: flex; align-items: center; }
+  .panel-bar .panel-user { margin-left: 0; }
+  .portal-menu { display: contents; }
 
-    /* Pet Owner portal: round button at the top right, the box floats under it */
-    .app-header { position: relative; }
-    .app-header > .logo { text-align: left !important; padding-right: 54px; box-sizing: border-box; }
-    .app-header > .user-menu { position: absolute; top: 14px; right: 16px; }
-    .app-header .user-menu-btn { width: 38px; height: 38px; font-size: 13px; }
-    .app-header .user-menu-box { width: min(280px, calc(100vw - 32px)); }
+  @media (max-width: 900px) {
+    /* top bar: logo ... bell, Menu */
+    .panel-bar { flex-wrap: wrap; column-gap: 8px; padding: 0 16px !important; }
+    .panel-bar .logo { font-size: 18px !important; white-space: nowrap; }
+    .panel-bar .nav-toggle, .app-header .nav-toggle { margin-left: 0; padding: 8px 12px; font-size: 14px; white-space: nowrap; }
+    .app-header { flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+    .app-header .logo { width: auto !important; font-size: 18px; text-align: left !important; white-space: nowrap; }
+    .app-header .nav-toggle { display: inline-block; order: 2; margin-left: auto; }
+    .portal-menu { display: none; order: 3; width: 100%; padding: 6px 0 4px; border-top: 1px solid #f1ebe3; }
+    .app-header .app-nav { flex-direction: column; align-items: stretch; width: 100%; gap: 2px; }
+    .app-header .app-nav a { padding: 11px 14px; font-size: 15px; text-align: left; }
+
+    /* opened Menu: user on top, the pages in the middle, Profile / Log out at the bottom */
+    .panel-menu.open, .portal-menu.open { display: flex; flex-direction: column; }
+    .panel-menu .panel-user, .panel-menu .user-menu, .panel-menu .user-menu-box,
+    .portal-menu .user-menu, .portal-menu .user-menu-box { display: contents; }
+    .panel-menu .user-menu-btn, .portal-menu .user-menu-btn { display: none; }
+    .panel-menu .user-menu-head, .portal-menu .user-menu-head { order: -1; margin: 6px 0 10px; padding: 14px; border: 1px solid #eee6db; border-radius: 14px; background: #fffdfa; }
+    .panel-menu .user-menu-avatar, .portal-menu .user-menu-avatar { display: inline-flex; width: 46px; height: 46px; font-size: 16px; }
+    .panel-menu .panel-nav, .portal-menu .app-nav { order: 0; }
+    .panel-menu .user-menu-links, .portal-menu .user-menu-links { order: 1; margin-top: 10px; padding-top: 8px; border-top: 1px solid #f1ebe3; }
+    .panel-menu .user-menu-links .user-menu-item, .portal-menu .user-menu-links .user-menu-item { padding: 12px 14px; border-radius: 8px; color: #26364a !important; font-size: 15px; font-weight: 600; }
+    .panel-menu .user-menu-links .user-menu-item:hover, .portal-menu .user-menu-links .user-menu-item:hover { background: #fff5e8; }
+    .panel-menu .user-menu-logout, .portal-menu .user-menu-logout { margin-top: 0; border-top: none !important; color: #b03a37 !important; }
+    .panel-menu .user-menu-links .user-menu-logout:hover, .portal-menu .user-menu-links .user-menu-logout:hover { background: #fff1f1; }
   }
 </style>
 <script>
