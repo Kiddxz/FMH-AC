@@ -1,0 +1,59 @@
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        // the booking website first: on its own domain its "/" is the booking home page
+        web: [__DIR__.'/../routes/guest-booking.php', __DIR__.'/../routes/web.php'],
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        // Extra pages: online payment with PayMongo (pay link for walk-in customers),
+        // the live email check of the register page, the notification bell,
+        // and booking without an account. A file that is not there yet is simply skipped.
+        then: function () {
+            foreach (['online-payment', 'register-checks', 'notifications'] as $file) {
+                $path = base_path('routes/' . $file . '.php');
+                if (file_exists($path)) {
+                    Route::middleware('web')->group($path);
+                }
+            }
+        },
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        // 'role' guard used in routes/web.php, e.g. ->middleware('role:staff')   (Phase 4)
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
+
+        // Maintenance mode from the Super Admin settings (Phase 17) and the security headers (Phase 18): run on every web page
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckSystemStatus::class,
+            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\PersonNamesOnly::class,   // no numbers in people's names, on every form
+            \App\Http\Middleware\WalkInSiteOnly::class,    // the walk-in website shows only the booking and pay pages
+        ]);
+
+        // The walk-in website check runs before the login check, so /portal, /admin, ... give "Page Not Found" there
+        // right away instead of first sending the visitor to a login page
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+            prepend: \App\Http\Middleware\WalkInSiteOnly::class,
+        );
+
+        // Minimalist look: colored emoji on every page are sent as simple line icons
+        $middleware->append(\App\Http\Middleware\EmojiToLineIcons::class);
+
+        // Not logged in and opens a protected page -> go to the login page
+        $middleware->redirectGuestsTo(fn () => route('login'));
+
+        // Already logged in and opens the login/register page -> go to the dashboard of the role
+        $middleware->redirectUsersTo(fn (Request $request) => $request->user()->homeUrl());
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
