@@ -3,23 +3,28 @@
 @section('body_class', 'dashboard-page')
 @section('content')
 <style>
-  /* Minimal pet cards: white card, plain text, two simple links */
-  .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
-  .mp-card { display: flex; flex-direction: column; padding: 20px 22px; border: 1px solid #ece7e0; border-radius: 12px; background: #fff; }
+  /* Pet cards: white, quiet colors, details in simple rows, two links at the bottom */
+  .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
+  .mp-card { display: flex; flex-direction: column; border: 1px solid #ece6de; border-radius: 14px; background: #fff; box-shadow: 0 1px 2px rgba(38, 54, 74, 0.04); transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .mp-card:hover { border-color: #f1d7b6; box-shadow: 0 10px 26px rgba(38, 54, 74, 0.07); transform: translateY(-2px); }
   .mp-card.inactive { opacity: 0.6; }
-  .mp-top { display: flex; align-items: center; gap: 12px; }
-  .mp-icon { flex-shrink: 0; color: #e89427; font-size: 26px; line-height: 1; }
-  .mp-top h2 { margin: 0; color: #26364a; font-size: 19px; font-weight: 700; overflow-wrap: anywhere; }
-  .mp-top p { margin: 2px 0 0; color: #8a8f98; font-size: 14px; }
-  .mp-status { margin-left: auto; color: #8a8f98; font-size: 13px; }
-  .mp-meta { margin: 14px 0 0; color: #475569; font-size: 14px; }
-  .mp-note { margin: 6px 0 0; color: #8a8f98; font-size: 13.5px; }
-  .mp-note.due { color: #b03a37; }
-  .mp-links { display: flex; gap: 20px; margin-top: auto; padding-top: 16px; }
-  .mp-links a { padding: 0 !important; border: none !important; background: none !important; color: #26364a; font-size: 14px; font-weight: 600; text-decoration: none !important; }
-  .mp-links a.book { color: #c46f0c; }
-  .mp-links a:hover { text-decoration: underline !important; }
-  .mp-card .mp-space { flex: 1; min-height: 6px; }
+  .mp-top { display: flex; align-items: center; gap: 14px; padding: 22px 22px 0; }
+  .mp-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%; background: #fff6ec; color: #e89427; font-size: 24px; }
+  .mp-name { min-width: 0; }
+  .mp-name h2 { margin: 0; color: #26364a; font-size: 18px; font-weight: 700; overflow-wrap: anywhere; }
+  .mp-name p { margin: 3px 0 0; color: #8a8f98; font-size: 13.5px; }
+  .mp-status { margin-left: auto; padding: 2px 10px; border: 1px solid #e5e7eb; border-radius: 999px; color: #8a8f98; font-size: 12px; }
+  .mp-rows { flex: 1; margin: 16px 22px 0; }
+  .mp-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid #f4f0ea; font-size: 13.5px; }
+  .mp-row span:first-child { color: #9aa1ab; }
+  .mp-row span:last-child { color: #334155; font-weight: 600; text-align: right; }
+  .mp-row .none { color: #b6bcc5 !important; font-weight: 400 !important; }
+  .mp-row .due { color: #b03a37 !important; }
+  .mp-links { display: flex; justify-content: space-between; margin-top: 8px; padding: 14px 22px 16px; border-top: 1px solid #f4f0ea; }
+  .mp-links a { padding: 0 !important; border: none !important; background: none !important; color: #475569; font-size: 14px; font-weight: 600; text-decoration: none !important; transition: color 0.15s; }
+  .mp-links a:hover { color: #26364a; }
+  .mp-links a.book { color: #d07a12; }
+  .mp-links a.book:hover { color: #a95f08; }
 </style>
 <main class="pets-container">
   <div class="page-heading pet-heading">
@@ -50,7 +55,7 @@
         <article class="mp-card {{ $pet->status === 'active' ? '' : 'inactive' }}">
           <div class="mp-top">
             <span class="mp-icon" aria-hidden="true">{{ $pet->icon }}</span>
-            <div>
+            <div class="mp-name">
               <h2>{{ $pet->name }}</h2>
               <p>{{ ucfirst($pet->species) }}{{ $pet->breed ? ' · ' . $pet->breed : '' }}</p>
             </div>
@@ -58,14 +63,24 @@
               <span class="mp-status">{{ ucfirst($pet->status) }}</span>
             @endif
           </div>
-          <p class="mp-meta">{{ ucfirst($pet->gender) }} · {{ $pet->age_text }}</p>
-          @if ($next)
-            <p class="mp-note">Next visit: {{ $next->appointment_date->format('M j, Y') }}, {{ \Illuminate\Support\Carbon::parse($next->appointment_time)->format('g:i A') }}</p>
-          @endif
-          @if ($vaccine)
-            <p class="mp-note {{ $vaccine->next_due_date->isPast() ? 'due' : '' }}">{{ $vaccine->vaccine_name }} {{ $vaccine->next_due_date->isPast() ? 'was due' : 'due' }} {{ $vaccine->next_due_date->format('M j, Y') }}</p>
-          @endif
-          <div class="mp-space"></div>
+          <div class="mp-rows">
+            <div class="mp-row"><span>Sex</span><span>{{ ucfirst($pet->gender) }}</span></div>
+            <div class="mp-row"><span>Age</span><span>{{ \Illuminate\Support\Str::replaceLast(' old', '', $pet->age_text) }}</span></div>
+            <div class="mp-row"><span>Next visit</span>
+              @if ($next)
+                <span>{{ $next->appointment_date->format('M j') }}, {{ \Illuminate\Support\Carbon::parse($next->appointment_time)->format('g:i A') }}</span>
+              @else
+                <span class="none">None</span>
+              @endif
+            </div>
+            <div class="mp-row"><span>Vaccine due</span>
+              @if ($vaccine)
+                <span class="{{ $vaccine->next_due_date->isPast() ? 'due' : '' }}">{{ $vaccine->next_due_date->format('M j, Y') }}</span>
+              @else
+                <span class="none">None</span>
+              @endif
+            </div>
+          </div>
           <div class="mp-links">
             <a href="{{ route('portal.pets.show', $pet) }}">View Profile</a>
             @if ($pet->status === 'active')
