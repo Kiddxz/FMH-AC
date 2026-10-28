@@ -70,6 +70,9 @@
       var boxes = Array.prototype.slice.call(form.querySelectorAll('.code-box'));
       form.classList.add('code-ready');
       real.removeAttribute('autofocus');
+      // the boxes check the code below (and the server checks it again), so the hidden field needs no browser check
+      real.removeAttribute('required');
+      real.removeAttribute('pattern');
 
       function sync() {
         real.value = boxes.map(function (b) { return b.value; }).join('');
