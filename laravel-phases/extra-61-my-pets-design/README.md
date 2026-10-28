@@ -1,3 +1,3 @@
 # Extra 61: new My Pets design
 
-Cards with a header (avatar, name, species and breed), sex / age chips, next visit, next vaccine due, View Profile and Book Appointment buttons, and an "Add another pet" card. Active pets first.
+Cleaner cards: icon, name, species and breed; Sex / Age boxes; next visit and next vaccine; soft View Profile / Book Appointment links at the bottom. No extra "Add pet" card (the button is at the top). Active pets first.
