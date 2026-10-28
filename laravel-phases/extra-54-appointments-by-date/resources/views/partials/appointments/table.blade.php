@@ -1,5 +1,30 @@
-{{-- Appointment list with filters for the clinic. Use: @include('partials.appointments.table', ['area' => 'staff']) --}}
+{{-- Appointment list with filters for the clinic. Use: @include('partials.appointments.table', ['area' => 'staff'])
+     Tabs: Upcoming (nearest date and time first), Past (latest first), All (upcoming first, then past). --}}
+@php
+  $tabs = ['upcoming' => 'Upcoming', 'past' => 'Past', 'all' => 'All'];
+  $listNote = [
+    'upcoming' => 'Today and later, the nearest date and time first.',
+    'past' => 'Earlier appointments, the latest first.',
+    'all' => 'Upcoming first (nearest date and time on top), then past ones.',
+  ][$view];
+@endphp
+@once
+<style>
+  .appt-tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid #eee6db; border-radius: 12px; background: #faf6f0; }
+  .appt-tabs a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 9px; color: #64748b; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .appt-tabs a:hover { color: #c46f0c; }
+  .appt-tabs a.active { background: #fff; color: #c46f0c; box-shadow: 0 1px 4px rgba(38, 54, 74, 0.12); }
+  .appt-tabs .count { padding: 1px 8px; border-radius: 999px; background: #fff1df; color: #c46f0c; font-size: 12px; }
+  .appt-day { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 999px; background: #fff1df; color: #c46f0c; font-size: 11.5px; font-weight: 700; }
+  .appt-day.today { background: #e6f5e9; color: #287a43; }
+  @media (max-width: 700px) { .appt-tabs { width: 100%; } .appt-tabs a { flex: 1; justify-content: center; padding: 8px 6px; } }
+</style>
+@endonce
 <form class="admin-tools" method="get" action="{{ route($area . '.appointments.index') }}">
+  @if (request()->filled('view'))
+    {{-- a tab was clicked: searching and filtering stay inside that tab --}}
+    <input type="hidden" name="view" value="{{ $view }}">
+  @endif
   <input type="search" name="search" value="{{ $search }}" placeholder="Search by pet owner, pet name, or reference...">
   <select name="status" onchange="this.form.submit()">
     <option value="">All Status</option>
@@ -23,8 +48,16 @@
   <div class="admin-panel-header">
     <div>
       <h2>Appointment List</h2>
-      <p>Arranged by date and time, earliest first. {{ $appointments->total() }} found.</p>
+      <p>{{ $listNote }} {{ $appointments->total() }} found.</p>
     </div>
+    <nav class="appt-tabs" aria-label="Which appointments">
+      @foreach ($tabs as $tabKey => $tabLabel)
+        <a href="{{ route($area . '.appointments.index', array_filter(['view' => $tabKey, 'search' => $search, 'status' => $status, 'service' => $serviceId])) }}"
+           class="{{ $view === $tabKey ? 'active' : '' }}" @if ($view === $tabKey) aria-current="page" @endif>
+          {{ $tabLabel }}@if ($tabKey === 'upcoming' && $upcomingCount > 0)<span class="count">{{ $upcomingCount }}</span>@endif
+        </a>
+      @endforeach
+    </nav>
   </div>
   <table class="admin-table">
     <thead>
@@ -46,7 +79,14 @@
           <td>{{ $appointment->customer?->full_name }}</td>
           <td>{{ $appointment->pet?->name }}</td>
           <td>{{ $appointment->service_names }}</td>
-          <td>{{ $appointment->appointment_date->format('F j, Y') }}</td>
+          <td>
+            {{ $appointment->appointment_date->format('F j, Y') }}
+            @if ($appointment->appointment_date->isToday())
+              <br><span class="appt-day today">Today</span>
+            @elseif ($appointment->appointment_date->isTomorrow())
+              <br><span class="appt-day">Tomorrow</span>
+            @endif
+          </td>
           <td>{{ \Illuminate\Support\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</td>
           <td>@include('partials.status-badge', ['status' => $appointment->status])</td>
           <td style="white-space: nowrap;">

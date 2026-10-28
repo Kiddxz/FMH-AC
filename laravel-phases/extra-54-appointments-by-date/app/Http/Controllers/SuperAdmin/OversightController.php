@@ -27,7 +27,13 @@ class OversightController extends Controller
                 ->orWhereHas('pet', fn ($p) => $p->where('name', 'like', "%{$search}%"))
                 ->orWhereHas('customer', fn ($c) => $c->where('first_name', 'like', "%{$search}%")->orWhere('last_name', 'like', "%{$search}%"))
                 ->orWhereHas('service', fn ($s) => $s->where('name', 'like', "%{$search}%"))))
-            ->orderBy('appointment_date')->orderBy('appointment_time')->orderBy('id')   // earliest date and time on top
+            // the nearest coming appointment on top (e.g. tomorrow's first), then the past ones (the latest first)
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN 0 ELSE 1 END', [today()->toDateString()])
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN appointment_date END ASC', [today()->toDateString()])
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN appointment_time END ASC', [today()->toDateString()])
+            ->orderByDesc('appointment_date')
+            ->orderByDesc('appointment_time')
+            ->orderBy('id')
             ->paginate(20)
             ->withQueryString();
 

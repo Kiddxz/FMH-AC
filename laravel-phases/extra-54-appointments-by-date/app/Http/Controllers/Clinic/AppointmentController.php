@@ -43,6 +43,14 @@ class AppointmentController extends Controller
         $serviceId = $request->integer('service') ?: null;
         $date = $request->query('date');
 
+        // Tabs: Upcoming (today and later), Past, All.
+        // Opening the page with no filter shows Upcoming; a search or filter looks in All unless a tab was clicked.
+        $view = $request->query('view');
+        if (! in_array($view, ['upcoming', 'past', 'all'], true)) {
+            $view = ($search !== '' || $status || $serviceId || $date) ? 'all' : 'upcoming';
+        }
+        $today = today()->toDateString();
+
         $appointments = Appointment::with(['customer', 'pet', 'service'])
             ->when(in_array($status, Appointment::STATUSES, true), fn ($q) => $q->where('status', $status))
             // any appointment that has this service (also as a second or third service)
@@ -53,9 +61,14 @@ class AppointmentController extends Controller
                 ->where('reference', 'like', "%{$search}%")
                 ->orWhereHas('pet', fn ($p) => $p->where('name', 'like', "%{$search}%"))
                 ->orWhereHas('customer', fn ($c) => $c->where('first_name', 'like', "%{$search}%")->orWhere('last_name', 'like', "%{$search}%"))))
-            // by date and time: the earliest date and time on top
-            ->orderBy('appointment_date')
-            ->orderBy('appointment_time')
+            ->when($view === 'upcoming' && ! $date, fn ($q) => $q->whereDate('appointment_date', '>=', $today))
+            ->when($view === 'past' && ! $date, fn ($q) => $q->whereDate('appointment_date', '<', $today))
+            // the nearest coming appointment on top (e.g. tomorrow's first), then the past ones (the latest first)
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN 0 ELSE 1 END', [$today])
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN appointment_date END ASC', [$today])
+            ->orderByRaw('CASE WHEN appointment_date >= ? THEN appointment_time END ASC', [$today])
+            ->orderByDesc('appointment_date')
+            ->orderByDesc('appointment_time')
             ->orderBy('id')
             ->paginate(15)
             ->withQueryString();
@@ -67,6 +80,8 @@ class AppointmentController extends Controller
             'status' => $status,
             'serviceId' => $serviceId,
             'date' => $date,
+            'view' => $view,
+            'upcomingCount' => Appointment::whereDate('appointment_date', '>=', $today)->count(),
         ]);
     }
 

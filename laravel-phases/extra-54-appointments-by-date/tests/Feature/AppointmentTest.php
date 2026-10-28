@@ -243,16 +243,51 @@ class AppointmentTest extends TestCase
         $this->actingAs($super)->patch('/admin/appointments/1/confirm')->assertForbidden();
     }
 
-    public function test_appointment_lists_are_arranged_by_date_and_time_earliest_first(): void
+    public function test_the_nearest_coming_appointment_is_on_top(): void
     {
-        $key = fn ($a) => $a->appointment_date->format('Y-m-d') . ' ' . substr((string) $a->appointment_time, 0, 5);
-        $sorted = fn ($list) => $list->map($key)->values()->all() === $list->map($key)->sort()->values()->all();
+        $pet = Pet::where('name', 'Max')->first();
+        $make = fn (string $date, string $time) => Appointment::forceCreate([
+            'reference' => 'APP-T' . str_replace([':', '-'], '', $date . $time), 'customer_id' => $pet->customer_id, 'pet_id' => $pet->id,
+            'service_id' => Service::first()->id, 'appointment_date' => $date, 'appointment_time' => $time, 'status' => 'confirmed',
+        ]);
+        $tomorrowLate = $make(today()->addDay()->toDateString(), '15:00:00');
+        $tomorrowEarly = $make(today()->addDay()->toDateString(), '08:00:00');
+        $nextYear = $make(today()->addYear()->toDateString(), '08:00:00');
+        $lastWeek = $make(today()->subWeek()->toDateString(), '09:00:00');
 
-        $super = User::where('email', 'superadmin@fmhanimalclinic.com')->first();
+        $key = fn ($a) => $a->appointment_date->format('Y-m-d') . ' ' . substr((string) $a->appointment_time, 0, 5);
+
+        // Upcoming (default): today's first, then tomorrow 8:00 AM before 3:00 PM, nothing from the past
         $this->actingAs($this->staff)->get('/staff/appointments')->assertOk()
-            ->assertSee('Arranged by date and time, earliest first.')
-            ->assertViewHas('appointments', fn ($page) => $page->count() > 1 && $sorted($page->getCollection()));
-        $this->actingAs($super)->get('/superadmin/appointments')->assertOk()
-            ->assertViewHas('appointments', fn ($page) => $page->count() > 1 && $sorted($page->getCollection()));
+            ->assertSee('Tomorrow')
+            ->assertDontSee('>All</span>', false)   // the status label still shows the status, not the tab name
+            ->assertViewHas('view', 'upcoming')
+            ->assertViewHas('appointments', function ($page) use ($tomorrowEarly, $tomorrowLate, $lastWeek, $key) {
+                $list = $page->getCollection();
+                $keys = $list->map($key)->values()->all();
+                $sorted = $keys; sort($sorted);
+
+                $early = $list->search(fn ($a) => $a->is($tomorrowEarly));
+                $late = $list->search(fn ($a) => $a->is($tomorrowLate));
+
+                return $early !== false && $late !== false && $early < $late
+                    && $list->first()->appointment_date->gte(today())
+                    && $list->doesntContain(fn ($a) => $a->is($lastWeek)) && $keys === $sorted;
+            });
+
+        // Past: only earlier appointments, the latest first
+        $this->actingAs($this->staff)->get('/staff/appointments?view=past')->assertOk()
+            ->assertViewHas('appointments', fn ($page) => $page->getCollection()->every(fn ($a) => $a->appointment_date->lt(today()))
+                && $page->getCollection()->map($key)->values()->all() === $page->getCollection()->map($key)->sortDesc()->values()->all());
+
+        // All (and the Super Admin list): upcoming first, then past
+        foreach (['/staff/appointments?view=all' => $this->staff, '/superadmin/appointments' => User::where('email', 'superadmin@fmhanimalclinic.com')->first()] as $url => $user) {
+            $this->actingAs($user)->get($url)->assertOk()
+                ->assertViewHas('appointments', fn ($page) => $page->getCollection()->first()->appointment_date->gte(today())
+                    && $page->getCollection()->search(fn ($a) => $a->is($tomorrowEarly)) < $page->getCollection()->search(fn ($a) => $a->is($tomorrowLate)));
+        }
+
+        // a search looks in all appointments, past ones too
+        $this->actingAs($this->staff)->get('/staff/appointments?search=' . $lastWeek->reference)->assertOk()->assertSee($lastWeek->reference);
     }
 }
