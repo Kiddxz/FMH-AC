@@ -5,11 +5,9 @@
      Each page only shows ONE form: the profile details OR the password. --}}
 @php
   $isPassword = ($mode ?? 'profile') === 'password';
-  $isVet = $user->hasRole(\App\Models\Role::VET_ADMIN);
   $initials = mb_strtoupper(mb_substr((string) $user->first_name, 0, 1) . mb_substr((string) $user->last_name, 0, 1)) ?: '?';
   $profileUrl = route($area . '.profile');
   $icons = [
-    'user' => '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
     'lock' => '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
   ];
   $svg = fn (string $name, int $size = 20) => '<svg viewBox="0 0 24 24" width="' . $size . '" height="' . $size . '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . ($icons[$name] ?? '') . '</svg>';
@@ -136,6 +134,5 @@
       </div>
     </form>
     <p class="pe-note">Forgot your current password? Log out and use "Forgot Password" on the login page.</p>
-
   @endif
 </main>
