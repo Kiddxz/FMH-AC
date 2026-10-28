@@ -1,0 +1,159 @@
+/*
+  FMH Animal Clinic - fmh-sidebar.css
+  Side menu for the Staff, Admin and Super Admin panels (like the PayMongo dashboard).
+  Loaded after animal.css and fmh-ui.css by layouts/staff, layouts/admin and layouts/superadmin.
+    1. Page frame: side menu on the left, the page on the right
+    2. Side menu (logo, groups, links)
+    3. Small side menu (only icons) after clicking the "hide menu" button
+    4. Top bar of the page (hide menu button, bell, profile)
+    5. Phone: the side menu slides in from the left with the Menu button
+*/
+
+/* ---------- 1. Page frame ---------- */
+.fmh-app.has-sidebar { flex-direction: row; align-items: stretch; }
+.fmh-app.has-sidebar > * { width: auto; }
+.app-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
+.app-content { flex: 1; }
+.app-main > footer { margin-top: 0; padding: 22px 20px; font-size: 14px; color: #d6d6d6; }
+
+/* ---------- 2. Side menu ---------- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  width: 256px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid var(--fmh-line);
+  transition: width 0.2s ease;
+  z-index: 1100;
+}
+.sb-brand { display: flex; align-items: center; gap: 10px; height: 68px; padding: 0 20px; border-bottom: 1px solid #f1ebe3; color: var(--fmh-navy); text-decoration: none; flex-shrink: 0; }
+.sb-brand img { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; }
+.sb-brand span { font-size: 17px; font-weight: 800; line-height: 1.15; white-space: nowrap; }
+.sb-brand small { display: block; color: var(--fmh-muted); font-size: 11.5px; font-weight: 600; letter-spacing: 0.3px; }
+
+.sb-scroll { flex: 1; overflow-y: auto; padding: 14px 12px 20px; }
+.sb-group + .sb-group { margin-top: 18px; }
+.sb-group-title { margin: 0 0 6px; padding: 0 12px; color: #9aa1ab; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.sb-link { position: relative; display: flex; align-items: center; gap: 12px; height: 40px; margin: 2px 0; padding: 0 12px; border-radius: 10px; color: #475569; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+.sb-link svg { flex-shrink: 0; width: 19px; height: 19px; }
+.sb-link:hover { background: #faf6f0; color: var(--fmh-navy); }
+.sb-link.active { background: var(--fmh-orange-soft); color: #c46f0c; }
+.sb-link.active::before { content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--fmh-orange); }
+.sb-label { overflow: hidden; text-overflow: ellipsis; }
+
+/* the user and Profile / Log out inside the side menu are only for phones */
+.sb-phone-user, .sb-phone-links { display: none; }
+
+/* ---------- 3. Small side menu (only icons) ----------
+   Computer: after clicking the "hide menu" button (remembered by the browser).
+   Small laptop (901px - 1200px wide): small by default, the button opens the full menu OVER the page. */
+@media (min-width: 1201px) {
+  html.sb-collapsed .sidebar { width: 76px; }
+  html.sb-collapsed .sb-brand { justify-content: center; padding: 0; }
+  html.sb-collapsed .sb-brand span, html.sb-collapsed .sb-label { display: none; }
+  html.sb-collapsed .sb-group-title { height: 1px; margin: 10px 8px; padding: 0; overflow: hidden; background: #f1ebe3; color: transparent; }
+  html.sb-collapsed .sb-group:first-child .sb-group-title { display: none; }
+  html.sb-collapsed .sb-group + .sb-group { margin-top: 6px; }
+  html.sb-collapsed .sb-link { justify-content: center; padding: 0; }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .fmh-app.has-sidebar { padding-left: 76px; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: auto; }
+  html:not(.sb-expanded) .sidebar { width: 76px; }
+  html:not(.sb-expanded) .sb-brand { justify-content: center; padding: 0; }
+  html:not(.sb-expanded) .sb-brand span, html:not(.sb-expanded) .sb-label { display: none; }
+  html:not(.sb-expanded) .sb-group-title { height: 1px; margin: 10px 8px; padding: 0; overflow: hidden; background: #f1ebe3; color: transparent; }
+  html:not(.sb-expanded) .sb-group:first-child .sb-group-title { display: none; }
+  html:not(.sb-expanded) .sb-group + .sb-group { margin-top: 6px; }
+  html:not(.sb-expanded) .sb-link { justify-content: center; padding: 0; }
+  html.sb-expanded .sidebar { width: 256px; box-shadow: 0 0 40px rgba(38, 54, 74, 0.18); }
+}
+
+/* ---------- 4. Top bar of the page ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 68px;
+  padding: 0 28px;
+  background: #fff;
+  border-bottom: 1px solid var(--fmh-line);
+  box-sizing: border-box;
+}
+.topbar-logo { display: none; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.sb-collapse, .topbar .nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--fmh-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--fmh-navy);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.sb-collapse:hover, .topbar .nav-toggle:hover { border-color: var(--fmh-orange); color: var(--fmh-orange); background: #fffaf3; }
+.sb-collapse svg { width: 20px; height: 20px; }
+.topbar .nav-toggle { display: none; font-size: 0; line-height: 1; }
+.topbar .nav-toggle::before { content: "\2630"; font-size: 20px; }
+.topbar .nav-toggle[aria-expanded="true"]::before { content: "\2715"; font-size: 18px; }
+.sb-backdrop { display: none; }
+
+/* ---------- 5. Phone and tablet ---------- */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 286px !important;
+    height: auto;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(38, 54, 74, 0.18); }
+  .sb-backdrop { position: fixed; inset: 0; z-index: 1050; background: rgba(38, 54, 74, 0.35); }
+  .sidebar.open + .sb-backdrop { display: block; }
+
+  /* inside the phone menu always show the full menu, even if it was made small on a computer */
+  .sidebar .sb-brand { justify-content: flex-start !important; padding: 0 20px !important; }
+  .sidebar .sb-brand span, .sidebar .sb-label { display: inline !important; }
+  .sidebar .sb-group-title { height: auto !important; margin: 0 0 6px !important; padding: 0 12px !important; background: none !important; color: #9aa1ab !important; }
+  .sidebar .sb-group:first-child .sb-group-title { display: block !important; }
+  .sidebar .sb-link { justify-content: flex-start !important; padding: 0 12px !important; }
+
+  /* phone menu: the user at the top, Profile / Log out at the bottom */
+  .sb-phone-user { display: flex; align-items: center; gap: 12px; margin: 14px 12px 0; padding: 14px; border: 1px solid var(--fmh-line); border-radius: 14px; background: #fffdfa; }
+  .sb-phone-user .sb-avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--fmh-navy); color: #fff; font-size: 15px; font-weight: 700; }
+  .sb-phone-user div { min-width: 0; }
+  .sb-phone-user strong { display: block; color: var(--fmh-navy); font-size: 14px; text-transform: uppercase; overflow-wrap: anywhere; }
+  .sb-phone-user span { display: block; color: #2e8b57; font-size: 12.5px; overflow-wrap: anywhere; }
+  .sb-phone-user small { display: block; color: #8a8f98; font-size: 12px; }
+  .sb-phone-links { display: block; padding: 10px 12px 16px; border-top: 1px solid #f1ebe3; }
+  .sb-phone-links .sb-logout { color: #b03a37; }
+  .sb-phone-links .sb-logout:hover { background: #fff1f1; color: #b03a37; }
+
+  /* top bar: logo ... bell, Menu */
+  .topbar { height: 62px; padding: 0 16px; gap: 8px; }
+  .sb-collapse { display: none; }
+  .topbar-logo { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--fmh-navy); font-size: 18px; font-weight: 800; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-logo img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+  .topbar-right { gap: 6px; }
+  .topbar-right .user-menu { display: none; }
+  .topbar .nav-toggle { display: inline-flex; }
+}
+@media (max-width: 380px) {
+  .topbar { padding: 0 12px; }
+  .topbar-logo { font-size: 16px; }
+}
