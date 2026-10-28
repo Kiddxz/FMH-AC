@@ -24,7 +24,7 @@
   @if ($transaction->status === 'void')
     <div class="{{ $p }}-table-card" style="padding: 18px 25px; border-left: 5px solid #d9534f;">
       <strong style="color: #d9534f;">VOID</strong> · {{ $transaction->voided_at?->format('F j, Y g:i A') }}
-      · by {{ $transaction->voider ? 'Dr. ' . $transaction->voider->full_name : '—' }}
+      · by {{ $transaction->voider?->full_name ?? '—' }}
       <p style="margin-top: 6px; white-space: pre-line;">Reason: {{ $transaction->void_reason }}</p>
     </div>
   @endif
