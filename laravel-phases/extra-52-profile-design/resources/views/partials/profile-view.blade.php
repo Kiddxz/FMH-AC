@@ -1,7 +1,7 @@
 {{-- "My Profile" page content, the same design for every user (Pet Owner, Staff, Vet/Admin, Super Admin).
      Use: @include('partials.profile-view', ['area' => 'staff', 'user' => $user])            (customer: 'area' => 'portal', plus 'customer' => $customer)
-     Shows: a header card (initials, name, role, status, Edit / Change Password), a few numbers that fit the role,
-     the personal information, the account information and a password reminder. --}}
+     Shows: a header card (initials, name, role, status, Edit Profile), a few numbers that fit the role,
+     the personal information, the account information and the Change Password card. --}}
 @php
   $isVet = $user->hasRole(\App\Models\Role::VET_ADMIN);
   $initials = mb_strtoupper(mb_substr((string) $user->first_name, 0, 1) . mb_substr((string) $user->last_name, 0, 1)) ?: '?';
@@ -68,8 +68,6 @@
 @once
 <style>
   .pv-wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 40px 28px 50px; box-sizing: border-box; }
-  .pv-title { margin: 0 0 6px; color: #26364a; font-size: 34px; font-weight: 800; }
-  .pv-sub { margin: 0 0 24px; color: #64748b; font-size: 15px; }
   .pv-card { border: 1px solid #eee6db; border-radius: 16px; background: #fff; box-shadow: 0 2px 10px rgba(38, 54, 74, 0.05); }
   .pv-hero { overflow: hidden; margin-bottom: 20px; }
   .pv-cover { height: 96px; background: linear-gradient(120deg, #fff1df 0%, #ffe0b8 55%, #fbd09a 100%); }
@@ -104,7 +102,6 @@
   .pv-security p { margin: 4px 0 0; color: #64748b; font-size: 14px; }
   @media (max-width: 900px) {
     .pv-wrap { padding: 24px 16px 40px; }
-    .pv-title { font-size: 28px; }
     .pv-stats { grid-template-columns: 1fr; }
     .pv-grid { grid-template-columns: 1fr; }
     .pv-hero-body { padding: 0 18px 18px; }
@@ -115,9 +112,6 @@
 </style>
 @endonce
 <main class="pv-wrap">
-  <h1 class="pv-title">My Profile</h1>
-  <p class="pv-sub">Your personal and account information.</p>
-
   <section class="pv-card pv-hero">
     <div class="pv-cover"></div>
     <div class="pv-hero-body">
@@ -132,7 +126,6 @@
       </div>
       <div class="pv-actions">
         <a href="{{ $editUrl }}" class="pv-btn primary">{!! $svg('pencil', 17) !!} Edit Profile</a>
-        <a href="{{ $editUrl }}#change-password" class="pv-btn">{!! $svg('lock', 17) !!} Change Password</a>
       </div>
     </div>
   </section>
