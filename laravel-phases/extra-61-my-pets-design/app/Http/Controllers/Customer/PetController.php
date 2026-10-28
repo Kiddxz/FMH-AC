@@ -24,13 +24,7 @@ class PetController extends Controller
 {
     public function index(Request $request): View
     {
-        // Each card also shows the next visit and the next vaccine that is due
         $pets = $this->customer($request)->pets()
-            ->with([
-                'appointments' => fn ($q) => $q->with('service')->whereDate('appointment_date', '>=', today())
-                    ->whereIn('status', ['pending', 'confirmed'])->orderBy('appointment_date')->orderBy('appointment_time'),
-                'vaccinations',
-            ])
             ->orderByRaw("status = 'active' DESC")   // active pets first
             ->orderBy('name')
             ->get();
