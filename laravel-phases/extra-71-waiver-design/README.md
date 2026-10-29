@@ -1,9 +1,8 @@
-# Extra 71: nicer waiver design with the clinic's Terms and Conditions
+# Extra 71: waiver design, only the words of the clinic's paper form
 
 `resources/views/partials/waiver-paper.blade.php` only:
-- Header with the clinic logo, the 3 branches and the form title in a pill.
-- Sections: Owner & Pet Information (cream box), Authorization (the first paragraph, procedure highlighted),
-  Terms and Conditions (the clinic's paragraphs, word for word, numbered 1 and 2), Signature.
-- "By signing below, I confirm that I have read, understood and agreed to all of the above."
-- Status pill (Waiting / Signed / Reviewed), green "Signed ..." line, footer with the reference. Prints with the colors.
+- Header with the clinic logo, FMH ANIMAL CLINIC, the 3 branches and CONSENT (the form title).
+- The blanks of the paper form in a light box: Owner's Name, Date, Address, Tel. No., Pet's Name, Species/Breed, Age/Sex, Color, Weight, Temp.
+- The 3 paragraphs of the paper form exactly as written (no added headings or sentences), the procedure in the blank.
+- Name in Print + Signature. The reference, the status and the "Signed ..." line are system information.
 262 tests pass.
