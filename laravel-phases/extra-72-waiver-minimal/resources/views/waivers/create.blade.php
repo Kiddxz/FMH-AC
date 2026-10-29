@@ -98,7 +98,8 @@
       group.hidden = !needed;
     }
     // the chosen service: its description is shown, and its name goes in the blank when the blank is empty
-    var filledByService = '';
+    var selected = service.options[service.selectedIndex];
+    var filledByService = selected && selected.value && selected.dataset.name === procedure.value ? procedure.value : '';
     function showService() {
       var option = service.options[service.selectedIndex];
       serviceDescription.textContent = option && option.value ? option.dataset.description : '';
